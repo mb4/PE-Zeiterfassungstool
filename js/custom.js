@@ -96,7 +96,7 @@ function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id, f_dail
             });
             
          //determine daytypes and insert/update days
-         //TODO
+         //TODO 
                 
 	db.commit();
 	
