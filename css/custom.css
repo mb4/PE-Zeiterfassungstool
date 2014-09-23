@@ -4,9 +4,9 @@ html, body {
 
 body {
 	padding: 50px 0 0 0;
-	font-family: 'Roboto Slab';
+	font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-
+/*
 .navmenu {
 	padding-top: 50px;
 }
@@ -47,6 +47,6 @@ body {
 	}
   
 	.navbar {
-		display: none !important; /* IE8 fix */
+		display: none !important;
 	}
-}
+}*/
