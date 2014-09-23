@@ -16,8 +16,8 @@ if( db.isNew() ) {
 
     // create tables
     db.createTable('internship', ['unique_id', 'name', 'manager', 'lerner_id', 'start', 'end']);
-    db.createTable('day', ['unique_id', 'timestamp', 'type']);
-    db.createTable('working_period', ['unique_id', 'start', 'end', 'info']);
+    db.createTable('day', ['unique_id', 'internship_id', 'timestamp', 'type']);
+    db.createTable('working_period', ['unique_id', 'day_id', 'start', 'end', 'info']);
 
     // save tables to localStorage
     db.commit();
@@ -62,3 +62,6 @@ function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id) {
 	
 	return f_unique_id;
 }
+
+
+
