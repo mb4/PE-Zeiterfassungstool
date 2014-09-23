@@ -12,8 +12,9 @@
 
         <title>TimeTrackTool</title>
 
-        <!-- Bootstrap core CSS -->
+        <!-- Bootstrap / library CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/datepicker.css" rel="stylesheet">
         
         <!-- webfonts -->
         <link href="http://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300,100" rel="stylesheet">
@@ -24,32 +25,144 @@
 
     <body>
         <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
-            <a class="navbar-brand" href="#">TimeTrackTool</a>
+            <span class="navbar-brand" href="#">TimeTrackTool</span>
+            <button type="button" class="btn navbar-btn btn-danger" onclick="db.drop();">
+				<span class="glyphicon glyphicon-remove-sign"></span> <strong>Delete database</strong>
+			</button>
             
-            <div class="navbar-form navbar-right">
-				<button type="button" class="btn btn-danger btn-default" onclick="db.drop();">
-					<span class="glyphicon glyphicon-remove-sign"></span> Delete database
+            <div class="navbar-right">
+            	<span id="tracking-time" class="navbar-text">12:04</span>
+				<button type="button" class="btn navbar-btn btn-success" id="tracking-button">
+					<span class="glyphicon glyphicon-time"></span> <strong>Start tracking</strong>
 				</button>
+				&nbsp;
 			</div>
         </div>
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-xs-12 col-md-3 well">
-
-		             <h3></h3>
-
+                <div class="col-xs-12 col-md-5">
+                	<h2>Week overview</h2>
                 </div>
-                <div class="col-xs-12 col-md-4">Col2</div>
-                <div class="col-xs-12 col-md-5">Col3</div>
+                <div class="col-xs-12 col-md-4">
+                	<h2>Day overview</h2>
+                </div>
+                <div class="col-xs-12 col-md-3">
+	                <div class="well">
+	
+						<h3>PE5 - New York<br><small>PE12345 | Mr. John Smith</small></h3>
+						
+						<hr>
+						
+						<div class="row">
+	                		<div class="col-xs-12 col-md-6">
+								<h4>Start Date</h4>
+								<p>12.05.2014</p>
+							</div>
+							<div class="col-xs-12 col-md-6">
+								<h4>End Date</h4>
+								<p>31.08.2014</p>
+							</div>
+						</div>
+						
+						<hr>
+						
+						<h4>Free days</h4>
+						<table class="table">
+							<tbody>
+								<tr>
+									<td>Vacation</td>
+									<td>12.04.2014</td>
+									<td>15.08.2014</td>
+								</tr><tr>
+									<td>Holiday</td>
+									<td>12.04.2014</td>
+									<td>15.08.2014</td>
+								</tr><tr>
+									<td>Vacation</td>
+									<td>12.04.2014</td>
+									<td>15.08.2014</td>
+								</tr><tr>
+									<td>Holiday</td>
+									<td>12.04.2014</td>
+									<td>15.08.2014</td>
+								</tr>
+							</tbody>
+						</table>
+						
+						<hr>
+						<button class="btn btn-primary" id="edit-internship-button">
+							Edit
+						</button> 
+						<button class="btn btn-default" id="create-internship-button">
+							Create new internship
+						</button>
+	
+	                </div>
+                </div>
             </div>
             
         </div><!-- /.container -->
 
 
+
+		<!-- Modals -->
+		<div class="modal fade" id="form-internship" tabindex="-1" role="dialog">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="form-internship-title">Edit internship</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<form role="form">
+			      	<div class="row">
+			      		<div class="col-xs-12 col-md-6">
+				        	
+							<div class="form-group">
+								<label for="form-internship-name">Internship title</label>
+								<input type="text" class="form-control" id="form-internship-name" placeholder="Name for internship">
+							</div>
+							<div class="form-group">
+								<label for="form-internship-manager">Manager</label>
+								<input type="text" class="form-control" id="form-internship-manager" placeholder="Internship manager">
+							</div>
+							<div class="form-group">
+								<label for="form-internship-lerner-id">PE Lerner ID</label>
+								<input type="text" class="form-control" id="form-internship-lerner-id" placeholder="PE12345">
+							</div>							
+						</div>
+						<div class="col-xs-12 col-md-5">
+							<div class="form-group">
+								<label for="form-internship-start">Start date</label>
+		    					<div class="input-group">
+									<input type="text" id="form-internship-start" class="form-control" data-date="2014-02-12" data-date-format="yyyy-mm-dd" value="2014-02-12" placeholder="YYYY-MM-DD">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group">
+							<label for="form-internship-end">End date</label>
+								<div class="input-group">
+									<input type="text" id="form-internship-end" class="form-control" data-date="2014-02-12" data-date-format="yyyy-mm-dd" value="2014-02-12" placeholder="YYYY-MM-DD">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary">Save changes</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
         <!-- JavaScript Libraries -->
         <script src="js/jquery-2.1.1.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootstrap-datepicker.js"></script>
         <script src="js/localstoragedb.min.js"></script>
         <script src="js/md5.js"></script>
         <!-- Custom JS logic -->
