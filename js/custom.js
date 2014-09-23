@@ -150,7 +150,7 @@ $('#edit-internship-button').on('click', function() {
 });
 
 //create internship button handlers
-$('#edit-internship-button').on('click', function() {
+$('#create-internship-button').on('click', function() {
 	
 	// open modal with form
 	$('#form-internship').modal();
