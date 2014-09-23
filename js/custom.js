@@ -46,11 +46,13 @@ function generateUniqueId(timestamp, salt) {
  * 
  * @return unique_id of new entry
  */
-function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id) {
+function createOrUpdateInternship(f_name, f_start, f_end, f_manager, f_lerner_id, f_unique_id) {
 	
-	f_unique_id = generateUniqueId(f_start, f_name);
+	f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
+        
+        db.query("day", {})
 
-	db.insert('internship', {
+	db.insertOrUpdate('internship', {unique_id: f_unique_id}, {
 			unique_id: f_unique_id,
 			name: f_name,
 			start: f_start,
