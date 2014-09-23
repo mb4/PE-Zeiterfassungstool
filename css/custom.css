@@ -18,48 +18,20 @@ body {
 	color: #fff;
 	font-size: 2em;
 }
-
-/*
-.navmenu {
-	padding-top: 50px;
+button {
+	outline: 0 !important;
 }
 
-.navbar {
-	display: block;
-	text-align: center;
+#overview-week td {
+	position: relative;
 }
-.navbar-brand {
-	display: inline-block;
-	float: none;
-}
-.navbar-toggle {
+
+#overview-week td .working-period {
 	position: absolute;
-	float: left;
-	margin-left: 15px;
+	left: 0 !important;
+	top: 0;
+	display: block;
+	width: 100%;
+	background-color: #428bca;
+	z-index: 100;
 }
-
-.container {
-	max-width: 100%;
-}
-
-@media (min-width: 1px) {
-
-	.navbar-toggle {
-		display: block !important;
-	}
-}
-
-@media (min-width: 992px) {
-
-	body {
-		padding: 0 0 0 300px;
-	}
-  
-	.navmenu {
-		padding-top: 0;
-	}
-  
-	.navbar {
-		display: none !important;
-	}
-}*/
