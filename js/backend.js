@@ -370,25 +370,36 @@ function deleteInternship(f_internship_id)
     db.commit();
 }
 
-function createOrUpdateWorkingPeriod(f_internship_id, f_day_timestamp, f_start, f_end, f_info, f_unique_id)
+//ToDo: remove
+//function createOrUpdateWorkingPeriod(f_internship_id, f_day_timestamp, f_start, f_end, f_info, f_unique_id)
+//{
+//    //assign unique_id if working_period is new
+//    f_unique_id = f_unique_id || generateUniqueId(f_start, f_end+f_internship);
+//    
+//    db.insertOrUpdate("working_period",
+//        {
+//            unique_id:f_unique_id
+//        },
+//        {
+//            unique_id:f_unique_id,
+//            internship_id:f_internship_id,
+//            day_timestamp:f_day_timestamp,
+//            start: f_start,
+//            end: f_end,
+//            info: f_info
+//        });
+//     
+//     db.commit();
+//}
+
+/**
+ * deletes the specified working period
+ * 
+ * @param {uid/string} f_unique_id
+ */
+function deleteWorkingPeriod(f_unique_id)
 {
-    //assign unique_id if working_period is new
-    f_unique_id = f_unique_id || generateUniqueId(f_start, f_end+f_internship);
-    
-    db.insertOrUpdate("working_period",
-        {
-            unique_id:f_unique_id
-        },
-        {
-            unique_id:f_unique_id,
-            internship_id:f_internship_id,
-            day_timestamp:f_day_timestamp,
-            start: f_start,
-            end: f_end,
-            info: f_info
-        });
-     
-     db.commit();
+    db.deleteRows("working_period", {unique_id:f_unique_id});
 }
 
 /**
