@@ -69,45 +69,53 @@ function refreshDayOverview(f_timestamp) {
 // APPLICATION STARTUP                     //
 /////////////////////////////////////////////
 
-// set initial internship id to newest internship
-newestInternship = db.queryAll('internship', {
-						sort: [['start', 'DESC']],
-						limit: 1
-					});
 
-// if an internship is found, init the UI with this internship
-if(newestInternship.length != 0) {
+function init() {
 
-	window.internship = newestInternship[0].unique_id;
+	// set initial internship id to newest internship
+	newestInternship = db.queryAll('internship', {
+							sort: [['start', 'DESC']],
+							limit: 1
+						});
 	
-	window.overviewDay = getMidnightTimestamp( Date.now() );
-	window.overviewWeek = getWeekTimestamp( Date.now() );
+	// if an internship is found, init the UI with this internship
+	if(newestInternship.length != 0) {
 	
-	refreshInternshipOverview();
-	refreshWeekOverview();
-	refreshDayOverview();
-
-// no internship available, show welcome modal
-} else {
-
-	$('#welcome').modal({
-		backdrop: 'static',
-		keyboard: false
-	});
-	
-	// button handler for closing welcome and opening internship form
-	$('#welcome-button-close').on('click', function() {
-
-		$('#welcome').modal('hide');
+		window.internship = newestInternship[0].unique_id;
 		
-		$('#form-internship-close').hide();
-		$('#form-internship-cancel').hide();
-		$('#form-internship').modal({
+		window.overviewDay = getMidnightTimestamp( Date.now() );
+		window.overviewWeek = getWeekTimestamp( Date.now() );
+		
+		refreshInternshipOverview();
+		refreshWeekOverview();
+		refreshDayOverview();
+	
+	// no internship available, show welcome modal
+	} else {
+	
+		$('#welcome').modal({
 			backdrop: 'static',
 			keyboard: false
 		});
-	});
+		
+		// button handler for closing welcome and opening internship form
+		$('#welcome-button-close').on('click', function() {
+	
+			$('#welcome').modal('hide');
+					
+			$('#form-internship-cancel').hide();
+			$('#form-internship-delete').hide();
+			$('#form-internship-close').hide();
+			
+			$('#form-internship').modal({
+				backdrop: 'static',
+				keyboard: false
+			});
+		});
+	}
 }
+
+init();
 
 // add datepickers to internship form
 $('#form-internship-start').datepicker();
@@ -136,7 +144,9 @@ $('#edit-internship-button').on('click', function() {
 		$('#form-internship-id').val( window.internship );
 		
 		$('#form-internship-title').text('Edit internship');
+		
 		$('#form-internship-cancel').show();
+		$('#form-internship-delete').show();
 		$('#form-internship-close').show();
 		
 		// open modal with form
@@ -157,6 +167,7 @@ $('#create-internship-button').on('click', function() {
 	$('#form-internship-title').text('Create new internship');
 	
 	$('#form-internship-cancel').show();
+	$('#form-internship-delete').hide();
 	$('#form-internship-close').show();
 	
 	// open modal with form
@@ -212,6 +223,28 @@ $('#form-internship-save').on('click', function() {
 			}
 			
 			$('#form-internship').modal('hide');
+		}
+	}
+});
+
+
+// delete internship handler
+$('#form-internship-delete').on('click', function() {
+
+	if( ($('#form-internship-id').val()).length != 0 ) {
+	
+		var deleteConfirm = confirm('Do you really want to delete this internship? All data including tracked vacation days and holidays, and tracked working periods will be deleted irrevocable and immediately.');
+
+		if(deleteConfirm) {
+		
+			deleteInternship( $('#form-internship-id').val() );
+			
+			// update week and day list
+			refreshWeekOverview();
+			refreshDayOverview();
+			
+			// check for most current internship - used in app init function
+			init();
 		}
 	}
 });
