@@ -290,66 +290,66 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
  */
 function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holidays, f_vacation_days, f_unique_id) {
 	
-        //assign unique_id if internship is new
+    //assign unique_id if internship is new
 	f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
-        
-         //get midnight timestamps
-         f_start = getMidnightTimestamp(f_start);
-         f_end = getMidnightTimestamp(f_end);
-         for (var x=0; x < f_holidays.length; x++)
-         {
-             f_holidays[x] = getMidnightTimestamp(f_holidays[x]);
-         }
-         for (var x=0; x < f_vacation_days.length; x++)
-         {
-             f_vacation_days[x] = getMidnightTimestamp(f_vacation_days[x]);
-         }
-         
-         //delete working periods outside new internship period
-         db.deleteRows("working_period", function(row){
-            if(row.internship_id == f_unique_id && (row.day_timestamp < f_start || row.day_timestamp > f_end))
-                return true;
-            else
-                return false;
-         });
-        
-        //delete days outside new internship period
-        db.deleteRows("day", function(row){
-           if(row.internship_id == f_unique_id && (row.timestamp < f_start || row.timestamp > f_end))
-               return true;
-           else
-               return false;
+    
+	//get midnight timestamps
+	f_start = getMidnightTimestamp(f_start);
+	f_end = getMidnightTimestamp(f_end);
+     for (var x=0; x < f_holidays.length; x++)
+     {
+         f_holidays[x] = getMidnightTimestamp(f_holidays[x]);
+     }
+     for (var x=0; x < f_vacation_days.length; x++)
+     {
+         f_vacation_days[x] = getMidnightTimestamp(f_vacation_days[x]);
+     }
+     
+     //delete working periods outside new internship period
+     db.deleteRows("working_period", function(row){
+        if(row.internship_id == f_unique_id && (row.day_timestamp < f_start || row.day_timestamp > f_end))
+            return true;
+        else
+            return false;
+     });
+    
+    //delete days outside new internship period
+    db.deleteRows("day", function(row){
+       if(row.internship_id == f_unique_id && (row.timestamp < f_start || row.timestamp > f_end))
+           return true;
+       else
+           return false;
+    });
+
+    //insert/ update internship
+	db.insertOrUpdate('internship',
+        {
+            unique_id: f_unique_id
+        },
+        {
+			unique_id: f_unique_id,
+			name: f_name,
+			start: f_start,
+			end: f_end,
+            daily_hours: f_daily_hours
         });
         
-        //insert/ update internship
-	db.insertOrUpdate('internship',
-            {
-                unique_id: f_unique_id
-            },
-            {
-				unique_id: f_unique_id,
-				name: f_name,
-				start: f_start,
-				end: f_end,
-                daily_hours: f_daily_hours
-            });
-            
-         //determine daytypes and insert/update days
-         for(var timestamp = f_start; timestamp <= f_end; timestamp+=1000*60*60*24)
-         {
-            var date = new Date(timestamp);
-            var type;
-            if (f_holidays.indexOf(date.getTime()) >= 0)
-                type = "Holiday";
-            else if (date.getDay() == 0 || date.getDay() == 6)
-                type = "Weekend";
-            else if (f_vacation_days.indexOf(date.getTime()) >= 0)
-                type = "Vacation";
-            else 
-                type = "Working Day";
-            
-            createOrUpdateDay(f_unique_id, timestamp, type);
-         }
+     //determine daytypes and insert/update days
+     for(var timestamp = f_start; timestamp <= f_end; timestamp+=1000*60*60*24)
+     {
+        var date = new Date(timestamp);
+        var type;
+        if (f_holidays.indexOf(date.getTime()) >= 0)
+            type = "Holiday";
+        else if (date.getDay() == 0 || date.getDay() == 6)
+            type = "Weekend";
+        else if (f_vacation_days.indexOf(date.getTime()) >= 0)
+            type = "Vacation";
+        else 
+            type = "Working Day";
+        
+        createOrUpdateDay(f_unique_id, timestamp, type);
+     }
                 
 	db.commit();
 	
