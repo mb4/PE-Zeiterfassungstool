@@ -34,6 +34,7 @@ if( db.isNew() ) {
     db.createTable('internship', ['unique_id', 'name', 'start', 'end', 'daily_hours']);
     db.createTable('day', ['internship_id', 'timestamp', 'type', 'info']);
     db.createTable('working_period', ['unique_id', 'internship_id', 'day_timestamp', 'start', 'end', 'info']);
+    db.createTable('user_preferences', ['key', 'value']);
     
     // save tables to localStorage
     db.commit();
@@ -109,18 +110,18 @@ function convertPeriodToDayList(f_start, f_end) {
  * @param {string/uid} f_internship_id
  * @returns {array} free days and periods
  */
-function getFreeDaysAndPeriods(f_internship_id)
+function getHolidaysAndVacationPeriods(f_internship_id)
 {
     //query all day records belonging to specified internship
     var days_total = db.query("day", {internship_id: f_internship_id});
-    var free_periods = new Array();
+    var days_and_periods = new Array();
     
     for (x=0; x<days_total.length; x++)
     {
         if(days_total[x].type == "Holiday")
         {
-            //push holidays directly to free_periods array
-            free_periods.push({type:days_total[x].type, start:days_total[x].timestamp, info:days_total[x].info});
+            //push holidays directly to days_and_periods array
+            days_and_periods.push({type:days_total[x].type, start:days_total[x].timestamp, info:days_total[x].info});
         }
         else if (days_total[x].type == "Vacation")
         {
@@ -138,23 +139,23 @@ function getFreeDaysAndPeriods(f_internship_id)
         }
         else if (days_total[x].type == "Working Day")
         {
-            //if existing, push vacation object to free_periods array before destroying the former
+            //if existing, push vacation object to days_and_periods array before destroying the former
             if(typeof(vacation) == "object")
             {
-                free_periods.push(vacation);
+                days_and_periods.push(vacation);
                 vacation = undefined;
             }
         }
     }
     
-    //if internship ends with vacation, the last vacation object needs to be pushed to the free_periods array after above iteration
+    //if internship ends with vacation, the last vacation object needs to be pushed to the days_and_periods array after above iteration
     if(typeof(vacation) == "object")
     {
-        free_periods.push(vacation);
+        days_and_periods.push(vacation);
         vacation = undefined;
     }
     
-    return free_periods;
+    return days_and_periods;
 }
 
 /**
@@ -263,15 +264,13 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
  * deletes days previously assigned to the internship, that are now outside the new internship period
  * creates/updates days in the internship period taking into account holidays and vacation days
  * 
- * @param {type} f_name
- * @param {type} f_start
- * @param {type} f_end
- * @param {type} f_manager
- * @param {type} f_lerner_id
- * @param {type} f_daily_hours
- * @param {type} f_holidays
- * @param {type} f_vacation_days
- * @param {type} f_unique_id
+ * @param {string} f_name
+ * @param {timestamp/int} f_start
+ * @param {timestamp/int} f_end
+ * @param {int} f_daily_hours
+ * @param {array of timestamps/int} f_holidays
+ * @param {type of timestamp/int} f_vacation_days
+ * @param {uid/string} f_unique_id
  * @returns {@var;f_unique_id}
  */
 function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holidays, f_vacation_days, f_unique_id) {
@@ -299,7 +298,7 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
                 return false;
          });
         
-        //delete days outside new intership period
+        //delete days outside new internship period
         db.deleteRows("day", function(row){
            if(row.internship_id == f_unique_id && (row.timestamp < f_start || row.timestamp > f_end))
                return true;
@@ -340,6 +339,18 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
 	db.commit();
 	
 	return f_unique_id;
+}
+
+/**
+ * deletes an internship + all corresponding days and working periods
+ * 
+ * @param {uid/string} f_internship_id
+  */
+function deleteInternship(f_internship_id)
+{
+    db.deleteRows("working_period", {internship_id:f_internship_id});
+    db.deleteRows("day", {internship_id:f_internship_id});
+    db.deleteRows("internship", {unique_id:f_internship_id});
 }
 
 //ToDO: remove
