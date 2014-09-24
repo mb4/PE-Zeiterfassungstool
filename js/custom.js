@@ -81,7 +81,7 @@ function getHumanReadableDate(f_timestamp) {
  * @param {type} f_end
  * @returns {Array} list of timestamp represented days in the specified period
  */
-function convertPeriodtoDayList(f_start, f_end) {
+function convertPeriodToDayList(f_start, f_end) {
     
     //get midnight timestamp for start, end
     f_start = getMidnightTimestamp(f_start);
