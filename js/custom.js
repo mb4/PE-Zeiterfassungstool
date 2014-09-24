@@ -30,7 +30,7 @@ if( db.isNew() ) {
 
     // create tables
     db.createTable('internship', ['unique_id', 'name', 'start', 'end', 'daily_hours']);
-    db.createTable('day', ['internship_id', 'timestamp', 'type']);
+    db.createTable('day', ['internship_id', 'timestamp', 'type', 'info']);
     db.createTable('working_period', ['unique_id', 'day_id', 'start', 'end', 'info']);
 
     // save tables to localStorage
@@ -94,6 +94,60 @@ function convertPeriodToDayList(f_start, f_end) {
         days.push(timestamp);
     }
     return days;
+}
+
+/**
+ * returns array with objects of type "Holiday" (day) and "Vacation" (period)
+ * 
+ * @param {string/uid} f_internship_id
+ * @returns {array} free days and periods
+ */
+function getFreeDaysAndPeriods(f_internship_id)
+{
+    //query all day records belonging to specified internship
+    var days_total = db.query("day", {internship_id: f_internship_id});
+    var free_periods = new Array();
+    
+    for (x=0; x<days_total.length; x++)
+    {
+        if(days_total[x].type == "Holiday")
+        {
+            //push holidays directly to free_periods array
+            free_periods.push({type:days_total[x].type, start:days_total[x].timestamp, info:days_total[x].info});
+        }
+        else if (days_total[x].type == "Vacation")
+        {
+            //change end of vacation object to current vacation day
+            if(typeof(vacation) == "object")
+            {
+                vacation.end = days_total[x].timestamp;
+                vacation.vacation_days+=1;
+            }
+            //create vacation object if it doesn't exist
+            else
+            {
+                var vacation = {type:days_total[x].type, start:days_total[x].timestamp, end:days_total[x].timestamp, vacation_days:1};
+            }
+        }
+        else if (days_total[x].type == "Working Day")
+        {
+            //if existing, push vacation object to free_periods array before destroying the former
+            if(typeof(vacation) == "object")
+            {
+                free_periods.push(vacation);
+                vacation = undefined;
+            }
+        }
+    }
+    
+    //if internship ends with vacation, the last vacation object needs to be pushed to the free_periods array after above iteration
+    if(typeof(vacation) == "object")
+    {
+        free_periods.push(vacation);
+        vacation = undefined;
+    }
+    
+    return free_periods;
 }
 
 /**
@@ -216,8 +270,8 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
 
 //ToDO: remove
 //createOrUpdateDay(333, 2411568691988, "Holiday");
-//createOrUpdateInternship("test", 1411549941668, 1412759541668, 2443, [1411768800000,1411682400005], convertPeriodtoDayList(1411549941668, 1412759541668), 222);
-
+//createOrUpdateInternship("test", 1411549941668, 1412759541668, 2443, [1411768800000,1411682400005], convertPeriodToDayList(1411549941668, 1412759541668), 222);
+//console.log(getFreeDaysAndPeriods(222));
 
 
 /**
