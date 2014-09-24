@@ -559,4 +559,3 @@ $('#overview-week select').on('change', function(e) {
 });
 
 
-// END TODO remove after finishing work
