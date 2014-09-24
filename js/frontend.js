@@ -18,34 +18,20 @@
  * @param {uid} f_internship_id unique ID of internship
  */
 function refreshInternshipOverview(f_internship_id) {
+
+	f_internship_id = f_internship_id || window.internship;
 	
 	var internship_data = db.query('internship', {unique_id: f_internship_id});
 	
 	if(internship_data.length != 0) {
 		
-		$('#overview-day-name').text( internship_data[0].name );
-		$('#overview-day-start').text( getHumanReadableDate(internship_data[0].start) );
-		$('#overview-day-end').text( getHumanReadableDate(internship_data[0].end) );
+		$('#overview-internship-name').text( internship_data[0].name );
+		$('#overview-internship-start').text( getHumanReadableDate(internship_data[0].start) );
+		$('#overview-internship-end').text( getHumanReadableDate(internship_data[0].end) );
 		
 		// fill table with free days
 		$freedays = $('#overview-internship-freedays').empty();
-		
-		internship_freedays = db.query('day',
-					function(row) {
-						if(row.internship_id == f_internship_id && ( row.type == 'Vacation' || row.type == 'Holiday' ))
-							return true;
-						return false;
-					});
-		
-		if(internship_freedays.length != 0) {
-
-			for(i = 0; i < internship_freedays.length; i++) {
-				
-				$freedays.append('<tr><td>' + internship_freedays[i].type + '</td><td>' + getHumanReadableDate(internship_freedays[i].start) + '</td><td>' + getHumanReadableDate(internship_freedays[i].end) + '</td></tr>');
-			}
-		} else {
-			$freedays.append('<tr><td>No free days added for this internship.</td></tr>');
-		}
+		//TODO
 	}
 }
 
@@ -85,10 +71,11 @@ function refreshDayOverview(f_timestamp) {
 
 // set initial internship id to newest internship
 newestInternship = db.queryAll('internship', {
-						sort: [['timestamp', 'DESC']],
+						sort: [['start', 'DESC']],
 						limit: 1
 					});
 
+// if an internship is found, init the UI with this internship
 if(newestInternship.length != 0) {
 
 	window.internship = newestInternship[0].unique_id;
@@ -134,7 +121,7 @@ $('#form-internship-end').datepicker();
 // EVENT HANDLERS                          //
 /////////////////////////////////////////////
 
-//edit internship button handlers
+// edit internship button handler
 $('#edit-internship-button').on('click', function() {
 
 	// fill form with internship data
@@ -146,7 +133,9 @@ $('#edit-internship-button').on('click', function() {
 		$('#form-internship-name').val( internship_data[0].name );
 		$('#form-internship-start').val( getHumanReadableDate(internship_data[0].start) ).attr('data-date', getHumanReadableDate(internship_data[0].start) );
 		$('#form-internship-end').val( getHumanReadableDate(internship_data[0].end) ).attr('data-date', getHumanReadableDate(internship_data[0].end) );
+		$('#form-internship-id').val( window.internship );
 		
+		$('#form-internship-title').text('Edit internship');
 		$('#form-internship-cancel').show();
 		$('#form-internship-close').show();
 		
@@ -162,8 +151,10 @@ $('#edit-internship-button').on('click', function() {
 
 });
 
-//create internship button handlers
+// create internship button handler
 $('#create-internship-button').on('click', function() {
+
+	$('#form-internship-title').text('Create new internship');
 	
 	$('#form-internship-cancel').show();
 	$('#form-internship-close').show();
@@ -173,7 +164,41 @@ $('#create-internship-button').on('click', function() {
 });
 
 
-//handler for tracking start/stop
+// save internship handler
+$('#form-internship-save').on('click', function() {
+
+	// get form values
+	var i_name = $('#form-internship-name').val();
+	var i_start = $('#form-internship-start').val();
+	var i_end = $('#form-internship-end').val();
+	var i_id = $('#form-internship-id').val();
+	
+	// validation check
+	if(i_name.length == 0) {
+		$('#form-internship-name').focus().parent().addClass('has-error');
+	} else if(i_start.length == 0) {
+		$('#form-internship-start').focus().parent().addClass('has-error');
+	} else if(i_end.length == 0) {
+		$('#form-internship-end').focus().parent().addClass('has-error');
+		
+	//TODO check if end date is earlier than start date
+		
+	// no errors, save data
+	} else {
+	
+		// save updated entry
+		if(i_id.length != 0) {
+		
+		// create new entry
+		} else {
+		
+			createOrUpdateInternship(i_name, getTimestampFromDate(i_start), getTimestampFromDate(i_end), 7.8, [], []);
+		}
+	}
+});
+
+
+// tracking start/stop handler
 $('#tracking-button').on('click', function(e) {
 	
 	var button = $('#tracking-button');
