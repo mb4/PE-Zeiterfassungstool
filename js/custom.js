@@ -60,6 +60,28 @@ function generateUniqueId(timestamp, salt) {
 }
 
 /**
+ * converts a period (start, end) into a list of days
+ * 
+ * @param {type} f_start
+ * @param {type} f_end
+ * @returns {Array} list of timestamp represented days in the specified period
+ */
+function convertPeriodtoDayList(f_start, f_end) {
+    
+    //get midnight timestamp for start, end
+    f_start = getMidnightTimestamp(f_start);
+    f_end = getMidnightTimestamp(f_end);
+    
+    //create and populate array with days between start and end (inclusive)
+    var days = new Array();
+    for(var timestamp = f_start; timestamp <= f_end; timestamp+=1000*60*60*24)
+    {
+        days.push(timestamp);
+    }
+    return days;
+}
+
+/**
  * calculates for a given timestamp the midnight timestamp of the particular day
  * 
  * @param {timestamp/int} f_timestamp
@@ -179,7 +201,7 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
 
 //ToDO: remove
 //createOrUpdateDay(333, 2411568691988, "Holiday");
-//createOrUpdateInternship("test", 1411549941668, 1412759541668, 2443, [1411768800000,1411682400005], [1412460000000,1412546400005], 222);
+//createOrUpdateInternship("test", 1411549941668, 1412759541668, 2443, [1411768800000,1411682400005], convertPeriodtoDayList(1411549941668, 1412759541668), 222);
 
 
 
