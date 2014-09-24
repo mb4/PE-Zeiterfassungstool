@@ -6,7 +6,7 @@
  * 										   *
  * * * * * * * * * * * * * * * * * * * * * */
 
- 
+
 
 /////////////////////////////////////////////
 // GLOBAL VARIABLES                        //
@@ -57,6 +57,21 @@ console.debug( JSON.parse( db.serialize() ) );
 function generateUniqueId(timestamp, salt) {
 	
 	return calcMD5( timestamp + salt + navigator.userAgent );
+}
+
+/**
+ * Create a date for output on UI from a given timestamp
+ * 
+ * @param {timestamp/int} timestamp
+ * @returns {string} date in human-readable format
+ */
+function getHumanReadableDate(f_timestamp) {
+	
+	var date = new Date(f_timestamp);
+	return
+			(date.getDate().length == 1) ? '0' : '') + date.getDate() + '.'
+			((date.getMonth()+1).length == 1) ? '0' : '') + date.getMonth() + '.'
+			date.getFullYear();
 }
 
 /**
@@ -216,8 +231,28 @@ function refreshInternshipOverview(f_internship_id) {
 	if(internship_data.length != 0) {
 		
 		$('#overview-day-name').text( internship_data[0].name );
-		$('#overview-day-start').text( internship_data[0].start );
-		$('#overview-day-start').text( internship_data[0].end );
+		$('#overview-day-start').text( getHumanReadableDate(internship_data[0].start) );
+		$('#overview-day-end').text( getHumanReadableDate(internship_data[0].end) );
+		
+		// fill table with free days
+		$freedays = $('#overview-internship-freedays').empty();
+		
+		internship_freedays = db.query('day',
+					function(row) {
+						if(row.internship_id == f_internship_id && ( row.type == 'Vacation' || row.type == 'Holiday' ))
+							return true;
+						return false;
+					});
+		
+		if(internship_freedays.length != 0) {
+
+			for(int i = 0; i < internship_freedays.length; i++) {
+				
+				$freedays.append('<tr><td>' + internship_freedays[i].type + '</td><td>' + getHumanReadableDate(internship_freedays[i].start) + '</td><td>' + getHumanReadableDate(internship_freedays[i].end) + '</td></tr>');
+			}
+		} else {
+			$freedays.append('<tr><td>No free days added for this internship.</td></tr>');
+		}
 	}
 } 
 
