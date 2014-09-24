@@ -165,7 +165,7 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
             else if (date.getDay() == 0 || date.getDay() == 6)
                 type = "Weekend";
             else if (f_vacation_days.indexOf(date.getTime()) >= 0)
-                type = "Vacation Day";
+                type = "Vacation";
             else 
                 type = "Working Day";
             
