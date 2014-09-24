@@ -74,12 +74,9 @@ function getHumanReadableDate(f_timestamp) {
 	var date = new Date(f_timestamp);
 	
 	
-	var humanReadableDate =	'' + (((date.getDate()+'').length == 1) ? '0' : '') + date.getDate() + '.' +
-							(((date.getMonth()+1+'').length == 1) ? '0' : '') + (date.getMonth()+1) + '.' +
-							date.getFullYear();
-							
-	console.debug(humanReadableDate);//TODO
-	return humanReadableDate;
+	return '' + (((date.getDate()+'').length == 1) ? '0' : '') + date.getDate() + '.' +
+				(((date.getMonth()+1+'').length == 1) ? '0' : '') + (date.getMonth()+1) + '.' +
+				date.getFullYear();
 }
 
 
@@ -393,13 +390,25 @@ $('#form-internship-end').datepicker();
 $('#edit-internship-button').on('click', function() {
 
 	// fill form with internship data
-	// TODO
-	// TODO get uniqueId of currently opened internship
+	
+	var internship_data = db.query('internship', {unique_id: window.internship});
+	
+	if(internship_data.length != 0) {
+		
+		$('#form-internship-name').val( internship_data[0].name );
+		$('#form-internship-start').val( getHumanReadableDate(internship_data[0].start) ).attr('data-date', getHumanReadableDate(internship_data[0].start) );
+		$('#form-internship-end').val( getHumanReadableDate(internship_data[0].end) ).attr('data-date', getHumanReadableDate(internship_data[0].end) );
+		
+		// open modal with form
+		$('#form-internship').modal();
+	} else {
+
+		alert('No entry found for editing with given ID.');//TODO change visualization?
+	}
+	
 	// TODO load data into form elements (input via element ID)
 	// TODO set values of data-date attribute for datepickers
 
-	// open modal with form
-	$('#form-internship').modal();
 });
 
 //create internship button handlers
