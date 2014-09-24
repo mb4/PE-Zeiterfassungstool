@@ -42,7 +42,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12 col-md-5">
-                	<h2>Week overview</h2>
+                	<h2>Week overview <small>22.09. - 26.09.2014</small></h2>
                 	
                 	<table class="table table-bordered table-condensed" id="overview-week">
 	                	<thead>
@@ -55,6 +55,10 @@
 	                			<th width="15%" class="text-center">Friday</th>
 	                			<th width="10%" class="text-center"><small>Saturday</small></th>
 	                			<th width="10%" class="text-center"><small>Sunday</small></th>
+	                		</tr>
+	                		<tr>
+	                			<th></th>
+	                			<th><a class="btn btn-default"></a></th>
 	                		</tr>
 	                	</thead>
 	                	<tbody>
@@ -72,23 +76,23 @@
                 	</table>
                 </div>
                 <div class="col-xs-12 col-md-4">
-                	<h2>Day overview</h2>
+                	<h2>Day overview <small>24.09.2014</small></h2>
                 </div>
                 <div class="col-xs-12 col-md-3">
 	                <div class="well">
 	
-						<h3>PE5 - New York<br><small>PE12345 | Mr. John Smith</small></h3>
+						<h3 id="overview-internship-name">PE5 - New York</h3>
 						
 						<hr>
 						
 						<div class="row">
 	                		<div class="col-xs-12 col-md-6">
 								<h4>Start Date</h4>
-								<p>12.05.2014</p>
+								<p id="overview-internship-start">12.05.2014</p>
 							</div>
 							<div class="col-xs-12 col-md-6">
 								<h4>End Date</h4>
-								<p>31.08.2014</p>
+								<p id="overview-internship-end">31.08.2014</p>
 							</div>
 						</div>
 						
@@ -96,7 +100,7 @@
 						
 						<h4>Free days</h4>
 						<table class="table">
-							<tbody>
+							<tbody id="overview-internship-freedays">
 								<tr>
 									<td>Vacation</td>
 									<td>12.04.2014</td>
@@ -149,15 +153,7 @@
 							<div class="form-group">
 								<label for="form-internship-name">Internship title</label>
 								<input type="text" class="form-control" id="form-internship-name" placeholder="Name for internship">
-							</div>
-							<div class="form-group">
-								<label for="form-internship-manager">Manager</label>
-								<input type="text" class="form-control" id="form-internship-manager" placeholder="Internship manager">
-							</div>
-							<div class="form-group">
-								<label for="form-internship-lerner-id">PE Lerner ID</label>
-								<input type="text" class="form-control" id="form-internship-lerner-id" placeholder="PE12345">
-							</div>							
+							</div>					
 						</div>
 						<div class="col-xs-12 col-md-5">
 							<div class="form-group">

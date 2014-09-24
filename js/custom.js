@@ -19,7 +19,7 @@ var db = new localStorageDB('timetracktool', localStorage);
 if( db.isNew() ) {
 
     // create tables
-    db.createTable('internship', ['unique_id', 'name', 'manager', 'lerner_id', 'start', 'end', 'daily_hours']);
+    db.createTable('internship', ['unique_id', 'name', 'start', 'end', 'daily_hours']);
     db.createTable('day', ['internship_id', 'timestamp', 'type']);
     db.createTable('working_period', ['unique_id', 'day_id', 'start', 'end', 'info']);
 
