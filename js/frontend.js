@@ -180,19 +180,38 @@ $('#form-internship-save').on('click', function() {
 		$('#form-internship-start').focus().parent().addClass('has-error');
 	} else if(i_end.length == 0) {
 		$('#form-internship-end').focus().parent().addClass('has-error');
-		
-	//TODO check if end date is earlier than start date
-		
+			
 	// no errors, save data
 	} else {
+
+		var startDate = getTimestampFromDate(i_start);
+		var endDate = getTimestampFromDate(i_end);
 	
-		// save updated entry
-		if(i_id.length != 0) {
-		
-		// create new entry
+		// check if endDate comes after startDate
+		if( startDate > endDate ) {
+
+			alert('The end date must be later than the start date.');
+
+		// no errors, save data
 		} else {
 		
-			createOrUpdateInternship(i_name, getTimestampFromDate(i_start), getTimestampFromDate(i_end), 7.8, [], []);
+			// save updated entry
+			if(i_id.length != 0) {
+
+				createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], [], i_id);
+				
+				// if the edited internship is currently displayed, update view
+				if(i_id == window.internship) {
+					refreshInternshipOverview();
+				}
+
+			// create new entry
+			} else {
+			
+				createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], []);
+			}
+			
+			$('#form-internship').modal('hide');
 		}
 	}
 });
