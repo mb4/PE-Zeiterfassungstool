@@ -291,7 +291,7 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
 function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holidays, f_vacation_days, f_unique_id) {
 	
         //assign unique_id if internship is new
-		f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
+	f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
         
          //get midnight timestamps
          f_start = getMidnightTimestamp(f_start);
@@ -366,6 +366,41 @@ function deleteInternship(f_internship_id)
     db.deleteRows("working_period", {internship_id:f_internship_id});
     db.deleteRows("day", {internship_id:f_internship_id});
     db.deleteRows("internship", {unique_id:f_internship_id});
+    
+    db.commit();
+}
+
+function createOrUpdateWorkingPeriod(f_internship_id, f_day_timestamp, f_start, f_end, f_info, f_unique_id)
+{
+    //assign unique_id if working_period is new
+    f_unique_id = f_unique_id || generateUniqueId(f_start, f_end+f_internship);
+    
+    db.insertOrUpdate("working_period",
+        {
+            unique_id:f_unique_id
+        },
+        {
+            unique_id:f_unique_id,
+            internship_id:f_internship_id,
+            day_timestamp:f_day_timestamp,
+            start: f_start,
+            end: f_end,
+            info: f_info
+        });
+     
+     db.commit();
+}
+
+/**
+ * returns all working periods of a day within an internship
+ * 
+ * @param {uid/string} f_internship_id
+ * @param {timestamp/int} f_day_timestamp
+ * @returns {array consisting of objects} working_periods
+ */
+function getWorkingPeriods(f_internship_id, f_day_timestamp)
+{
+    return db.query("working_period", {internship_id:f_internship_id, timestamp:f_day_timestamp});    
 }
 
 //ToDO: remove
