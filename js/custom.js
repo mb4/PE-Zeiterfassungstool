@@ -16,6 +16,8 @@ window.internship = 0;
 window.trackingStart = 0;
 
 
+
+
 /////////////////////////////////////////////
 // DATABASE INITIALIZATION                 //
 /////////////////////////////////////////////
@@ -126,6 +128,18 @@ function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id, f_dail
 
 
 
+/**
+ * Updates the internship view with data from given internship given by its unique_id
+ * @param {uid} f_internship_id unique ID of internship
+ */
+function refreshInternshipOverview(f_internship_id) {
+	
+	var internship_data = 0;
+} 
+
+
+
+
 
 
 /////////////////////////////////////////////
@@ -178,7 +192,7 @@ $('#create-internship-button').on('click', function() {
 //handler for tracking start/stop
 $('#tracking-button').on('click', function(e) {
 	
-	button = $('#tracking-button');
+	var button = $('#tracking-button');
 
 	// start tracking
 	if(button.hasClass('btn-success')) {
@@ -221,11 +235,13 @@ $('#tracking-button').on('click', function(e) {
 // overview week handlers
 $('#overview-week select').on('change', function(e) {
 	
-	// get class of column to apply styling
-	columnClass = $(e.target).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation').attr('class');
-	colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
+	var dayClasses = 'day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation';
 	
-	$('#overview-week .' + columnClass).removeClass().addClass(columnClass + ' ' + colorClass);
+	// get class of column to apply styling
+	var columnClass = $(e.target).removeClass(dayClasses).attr('class');
+	var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
+	
+	$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
 	
 });
 
