@@ -60,8 +60,23 @@ function generateUniqueId(timestamp, salt) {
 }
 
 /**
+ * calculates for a given timestamp the midnight timestamp of the particular day
  * 
- * create or update a day belonging to an internship
+ * @param {timestamp/int} f_timestamp
+ * @returns {timestamp/int} midnight timestamp
+ */
+function getMidnightTimestamp(f_timestamp){
+    
+    var date = new Date(f_timestamp);
+    date.setMilliseconds(0);
+    date.setSeconds(0);
+    date.setMinutes(0);
+    date.setHours(0);
+    return date.getTime();
+}
+
+/**
+ * creates/updates a day belonging to an internship
  * 
  * @param {uid} f_internship_id
  * @param {timestamp/int} f_timestamp
@@ -69,6 +84,9 @@ function generateUniqueId(timestamp, salt) {
  */
 function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
 {
+    //get midnight timestamp for day
+    f_timestamp = getMidnightTimestamp(f_timestamp);
+    
     db.insertOrUpdate("day",
     {
         internship_id: f_internship_id, 
@@ -84,13 +102,37 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
 }
 
 /**
- * create new internship in database
+ * creates/updates an internship
+ * deletes days previously assigned to the internship, that are now outside the new internship period
+ * creates/updates days in the internship period taking into account holidays and vacation days
  * 
- * @return unique_id of new entry
+ * @param {type} f_name
+ * @param {type} f_start
+ * @param {type} f_end
+ * @param {type} f_manager
+ * @param {type} f_lerner_id
+ * @param {type} f_daily_hours
+ * @param {type} f_holidays
+ * @param {type} f_vacation_days
+ * @param {type} f_unique_id
+ * @returns {@var;f_unique_id}
  */
-function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id, f_daily_hours, f_unique_id) {
+function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holidays, f_vacation_days, f_unique_id) {
 	
+        //assign unique_id if internship is new
 	f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
+        
+         //get midnight timestamps
+         f_start = getMidnightTimestamp(f_start);
+         f_end = getMidnightTimestamp(f_end);
+         for (var x=0; x < f_holidays.length; x++)
+         {
+             f_holidays[x] = getMidnightTimestamp(f_holidays[x]);
+         }
+         for (var x=0; x < f_vacation_days.length; x++)
+         {
+             f_vacation_days[x] = getMidnightTimestamp(f_vacation_days[x]);
+         }
         
         //delete days outside new intership period
         db.deleteRows("day", function(row){
@@ -110,21 +152,34 @@ function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id, f_dail
 		name: f_name,
 		start: f_start,
 		end: f_end,
-		manager: f_manager,
-		lerner_id: f_lerner_id,
                 daily_hours: f_daily_hours
             });
             
          //determine daytypes and insert/update days
-         //TODO 
+         for(var timestamp = f_start; timestamp <= f_end; timestamp+=1000*60*60*24)
+         {
+            var date = new Date(timestamp);
+            var type;
+            if (f_holidays.indexOf(date.getTime()) >= 0)
+                type = "Holiday";
+            else if (date.getDay() == 0 || date.getDay() == 6)
+                type = "Weekend";
+            else if (f_vacation_days.indexOf(date.getTime()) >= 0)
+                type = "Vacation Day";
+            else 
+                type = "Working Day";
+            
+            createOrUpdateDay(f_unique_id, timestamp, type);
+         }
                 
 	db.commit();
 	
 	return f_unique_id;
 }
 
-//createOrUpdateDay(222, 2355, "Holiday");
-//createInternship("test", 234, 445, "df", "fd", 2443, 222);
+//ToDO: remove
+//createOrUpdateDay(333, 2411568691988, "Holiday");
+//createOrUpdateInternship("test", 1411549941668, 1412759541668, 2443, [1411768800000,1411682400005], [1412460000000,1412546400005], 222);
 
 
 
