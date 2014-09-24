@@ -12,8 +12,8 @@
 // GLOBAL VARIABLES                        //
 /////////////////////////////////////////////
 
-window.internship = 0;
-window.trackingStart = 0;
+window.internship = 0; // currently selected and displayed internship
+window.trackingStart = 0; // timestamp saved at start of current tracking
 
 
 
@@ -50,9 +50,9 @@ console.debug( JSON.parse( db.serialize() ) );
 
 /**
  * generate a unique id with given timestamp, salt and browser's user agent
- * @param timestamp timestamp of object
- * @param salt string used to salt the generated key
- * @return string containing a MD5 hash usable as ID
+ * @param {timestamp} timestamp timestamp of object
+ * @param {string} salt string used to salt the generated key
+ * @return {string} string containing a MD5 hash usable as ID
  */
 function generateUniqueId(timestamp, salt) {
 	
@@ -189,7 +189,14 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
  */
 function refreshInternshipOverview(f_internship_id) {
 	
-	var internship_data = 0;
+	var internship_data = db.query('internship', {unique_id: f_internship_id});
+	
+	if(internship_data.length != 0) {
+		
+		$('#overview-day-name').text( internship_data[0].name );
+		$('#overview-day-start').text( internship_data[0].start );
+		$('#overview-day-start').text( internship_data[0].end );
+	}
 } 
 
 
@@ -254,7 +261,7 @@ $('#tracking-button').on('click', function(e) {
 
 		// change text and color of button
 		button.addClass('btn-danger').removeClass('btn-success').find('strong').text('Stop tracking');
-		
+
 		// start timer for tracking
 		$('#tracking-time').runner({
 			countdown: false,
@@ -263,10 +270,10 @@ $('#tracking-button').on('click', function(e) {
 			milliseconds: false,
 			interval: 1000
 			});
-		
+
 		// save tracking starting timestamp
 		window.trackingStart = Date.now();
-	
+
 	// stop tracking
 	} else {
 		
