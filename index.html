@@ -15,7 +15,7 @@
         <!-- Bootstrap / library CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/datepicker.css" rel="stylesheet">
-        
+
         <!-- webfonts -->
         <link href="http://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300,100" rel="stylesheet">
 
@@ -25,13 +25,13 @@
 
     <body>
         <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
-            <span class="navbar-brand" href="#">TimeTrackTool</span>
+            <span class="navbar-brand" href="#"><span class="glyphicon glyphicon-time"></span> TimeTrackTool</span>
             <button type="button" class="btn navbar-btn btn-danger" onclick="db.drop();">
 				<span class="glyphicon glyphicon-remove-sign"></span> <strong>Delete database</strong>
 			</button>
             
             <div class="navbar-right">
-            	<span id="tracking-time" class="navbar-text">12:04</span>
+            	<span id="tracking-time" class="navbar-text"></span>
 				<button type="button" class="btn navbar-btn btn-success" id="tracking-button">
 					<span class="glyphicon glyphicon-time"></span> <strong>Start tracking</strong>
 				</button>
@@ -41,41 +41,105 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-xs-12 col-md-5">
+                <div class="col-xs-12 col-md-6">
                 	<h2>Week overview <small>22.09. - 26.09.2014</small></h2>
                 	
                 	<table class="table table-bordered table-condensed" id="overview-week">
 	                	<thead>
 	                		<tr>
-	                			<th width="5%"></th>
-	                			<th width="15%" class="text-center">Monday</th>
-	                			<th width="15%" class="text-center">Tuesday</th>
-	                			<th width="15%" class="text-center">Wednesday</th>
-	                			<th width="15%" class="text-center">Thursday</th>
-	                			<th width="15%" class="text-center">Friday</th>
-	                			<th width="10%" class="text-center"><small>Saturday</small></th>
-	                			<th width="10%" class="text-center"><small>Sunday</small></th>
+	                			<th width="5.5%"><span class="glyphicon glyphicon-time"></span></th>
+	                			<th class="overview-week-0" width="13.5%">Monday</th>
+	                			<th class="overview-week-1" width="13.5%">Tuesday</th>
+	                			<th class="overview-week-2" width="13.5%">Wednesday</th>
+	                			<th class="overview-week-3" width="13.5%">Thursday</th>
+	                			<th class="overview-week-4" width="13.5%">Friday</th>
+	                			<th class="overview-week-5" width="13.5%"><small>Saturday</small></th>
+	                			<th class="overview-week-6" width="13.5%"><small>Sunday</small></th>
 	                		</tr>
 	                		<tr>
-	                			<th></th>
-	                			<th><a class="btn btn-default"></a></th>
+	                			<td></td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-0">
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-1">
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-2">
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-3">
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-4">
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-5">
+	                					<option value="Weekend">Weekend</option>
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
+	                			<td>
+	                				<small>
+	                				<select class="overview-week-6">
+	                					<option value="Weekend">Weekend</option>
+	                					<option value="Working day">Working day</option>
+	                					<option value="Holiday">Holiday</option>
+	                					<option value="Vacation">Vacation</option>
+	                				</select>
+	                				</small>
+	                			</td>
 	                		</tr>
 	                	</thead>
 	                	<tbody>
 	                		<tr>
 	                			<td class="text-right">0<br><br>4<br><br>8<br><br>12<br><br>16<br><br>20<br><br>24</td>
-	                			<td><div class="working-period" style="top:20%;height:23%;"></div><div class="working-period" style="top:58%;height:12.6%;"></div></td>
-	                			<td><div class="working-period" style="top:20%;height:23%;"></div><div class="working-period" style="top:58%;height:12.6%;"></div></td>
-	                			<td><div class="working-period" style="top:14%;height:50%;"></div></td>
-	                			<td><div class="working-period" style="top:10%;height:30%;"></div><div class="working-period" style="top:48%;height:12.6%;"></div></td>
-	                			<td><div class="working-period" style="top:20%;height:23%;"></div><div class="working-period" style="top:58%;height:12.6%;"></div></td>
-	                			<td></td>
-	                			<td></td>
+	                			<td class="overview-week-0"><div class="working-period" style="top:20%;height:23%;"></div><div class="working-period" style="top:58%;height:12.6%;"></div></td>
+	                			<td class="overview-week-1"><div class="working-period" style="top:20%;height:23%;"></div><div class="working-period" style="top:58%;height:12.6%;"></div></td>
+	                			<td class="overview-week-2"><div class="working-period" style="top:14%;height:50%;"></div></td>
+	                			<td class="overview-week-3"><div class="working-period" style="top:10%;height:30%;"></div><div class="working-period" style="top:48%;height:12.6%;"></div></td>
+	                			<td class="overview-week-4"><div class="working-period" style="top:20%;height:23%;"></div><div class="working-period" style="top:58%;height:12.6%;"></div></td>
+	                			<td class="overview-week-5"></td>
+	                			<td class="overview-week-6"></td>
 	                		</tr>
 	                	</tbody>
                 	</table>
                 </div>
-                <div class="col-xs-12 col-md-4">
+                <div class="col-xs-12 col-md-3">
                 	<h2>Day overview <small>24.09.2014</small></h2>
                 </div>
                 <div class="col-xs-12 col-md-3">
@@ -187,6 +251,7 @@
         <script src="js/bootstrap.min.js"></script>
         <script src="js/bootstrap-datepicker.js"></script>
         <script src="js/localstoragedb.min.js"></script>
+        <script src="js/jquery.runner-min.js"></script>
         <script src="js/md5.js"></script>
         <!-- Custom JS logic -->
         <script src="js/custom.js"></script>

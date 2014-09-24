@@ -6,6 +6,14 @@
  * 										   *
  * * * * * * * * * * * * * * * * * * * * * */
 
+ 
+
+/////////////////////////////////////////////
+// GLOBAL VARIABLES                        //
+/////////////////////////////////////////////
+
+window.internship = 0;
+window.trackingStart = 0;
 
 
 /////////////////////////////////////////////
@@ -124,7 +132,17 @@ function createInternship(f_name, f_start, f_end, f_manager, f_lerner_id, f_dail
 // APPLICATION STARTUP                     //
 /////////////////////////////////////////////
 
-//add datepickers to form
+// set initial inernship id to newest internship
+newestInternship = db.queryAll('internship', {
+						sort: [['timestamp', 'DESC']],
+						limit: 1
+					});
+
+if(newestInternship.length != 0) {
+	window.internship = newestInternship[0].unique_id;
+}
+
+// add datepickers to internship form
 $('#form-internship-start').datepicker();
 $('#form-internship-end').datepicker();
 
@@ -168,9 +186,17 @@ $('#tracking-button').on('click', function(e) {
 		// change text and color of button
 		button.addClass('btn-danger').removeClass('btn-success').find('strong').text('Stop tracking');
 		
-		// start timer for tracking 
-		// TODO
-		$('#tracking-time').text('Start');
+		// start timer for tracking
+		$('#tracking-time').runner({
+			countdown: false,
+			autostart: true,
+			startAt: 0,
+			milliseconds: false,
+			interval: 1000
+			});
+		
+		// save tracking starting timestamp
+		window.trackingStart = Date.now();
 	
 	// stop tracking
 	} else {
@@ -180,7 +206,7 @@ $('#tracking-button').on('click', function(e) {
 		
 		// stop timer for tracking
 		// TODO
-		$('#tracking-time').text('Stop');
+		$('#tracking-time').runner('stop');
 		
 		// save to working_period
 		// TODO
@@ -192,6 +218,16 @@ $('#tracking-button').on('click', function(e) {
 });
 
 
+// overview week handlers
+$('#overview-week select').on('change', function(e) {
+	
+	// get class of column to apply styling
+	columnClass = $(e.target).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation').attr('class');
+	colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
+	
+	$('#overview-week .' + columnClass).removeClass().addClass(columnClass + ' ' + colorClass);
+	
+});
 
 
 // END TODO remove after finishing work

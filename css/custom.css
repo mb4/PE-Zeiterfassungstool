@@ -1,3 +1,16 @@
+/* * * * * * * * * * * * * * * * * * * * * *
+ * 										   *
+ * TimeTrackTool						   *
+ * 										   *
+ * 2014 (c) Marvin Botens, Stephan Giesau  *
+ * 										   *
+ * * * * * * * * * * * * * * * * * * * * * */
+
+
+/**
+ * Basic styling
+ */
+
 html, body {
 	height: 100%;
 }
@@ -7,6 +20,14 @@ body {
 	font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+button {
+	outline: 0 !important;
+}
+
+
+/**
+ * Customizations
+ */
 
 /* datepicker in foreground so it is displayed infront of modals */
 .datepicker {
@@ -14,41 +35,83 @@ body {
 }
 
 #tracking-time {
+	width: 80px;
 	margin: 5px 15px;
 	color: #fff;
 	font-size: 2em;
 }
-button {
-	outline: 0 !important;
-}
 
 
 
+
+/**
+ * weekly overview styles
+ */
+
+/* correct borders for week overview table */
 #overview-week {
 	border-width: 0 1px 0 0 !important;
 }
-
 #overview-week th:first-child,
 #overview-week td:first-child {
 
 	border: 0 none !important;
 }
-
-
-#overview-week th {
+#overview-week thead th {
 	border-top: 1px solid #ddd;
+	text-align: center;
 }
 
-#overview-week td {
+/* day type dropdown */
+#overview-week thead td {
+	padding: 0;
+}
+#overview-week thead td select {
+	display: block;
+	width: 100%;
+	border: 0;
+}
+
+/* working period block */
+#overview-week tbody td {
 	position: relative;
 }
-
-#overview-week td .working-period {
+#overview-week tbody td .working-period {
 	position: absolute;
 	left: 0 !important;
 	top: 0;
 	display: block;
 	width: 100%;
-	background-color: #428bca;
+	background-color: #ddd;
 	z-index: 100;
+}
+
+/* classes for day type coloring */
+.day-working-day,
+#overview-week tbody td.day-bg-working-day div {
+	background-color: rgb(66, 139, 202);
+}
+.day-weekend,
+#overview-week tbody td.day-bg-weekend div {
+	background-color: rgb(91, 192, 222);
+}
+.day-holiday,
+#overview-week tbody td.day-bg-holiday div {
+	background-color: rgb(92, 184, 92);
+}
+.day-vacation,
+#overview-week tbody td.day-bg-vacation div {
+	background-color: rgb(236, 151, 31);
+}
+.day-bg-working-day {
+	background-color: rgba(66, 139, 202, .2);
+}
+.day-bg-weekend {
+	background-color: rgba(91, 192, 222, .2);
+}
+.day-bg-holiday {
+	background-color: rgba(92, 184, 92, .2);
+}
+.day-bg-vacation {
+	background-color: rgba(236, 151, 31, .2);
 }
