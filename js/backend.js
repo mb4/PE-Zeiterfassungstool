@@ -82,6 +82,21 @@ function getHumanReadableDate(f_timestamp) {
 
 
 /**
+ * Return timestamp from a given date in human-readable format
+ * 
+ * @param {string} date in human-readable format
+ * @returns {timestamp/int} timestamp
+ */
+function getTimestampFromDate(f_date) {
+	
+	var sp = f_date.split('.');
+	var date = new Date(sp[2], parseInt(sp[1])-1, sp[0], 0, 0, 0, 0);
+	
+	return date.getTime();
+}
+
+
+/**
  * converts a period (start, end) into a list of days
  * 
  * @param {type} f_start
@@ -276,7 +291,7 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
 function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holidays, f_vacation_days, f_unique_id) {
 	
         //assign unique_id if internship is new
-	f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
+		f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
         
          //get midnight timestamps
          f_start = getMidnightTimestamp(f_start);
