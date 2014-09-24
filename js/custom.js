@@ -69,7 +69,7 @@ function getHumanReadableDate(f_timestamp) {
 	
 	var date = new Date(f_timestamp);
 	return
-			(date.getDate().length == 1) ? '0' : '') + date.getDate() + '.'
+			((date.getDate().length == 1) ? '0' : '') + date.getDate() + '.'
 			((date.getMonth()+1).length == 1) ? '0' : '') + date.getMonth() + '.'
 			date.getFullYear();
 }
