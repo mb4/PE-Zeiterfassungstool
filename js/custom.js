@@ -70,7 +70,7 @@ function getHumanReadableDate(f_timestamp) {
 	var date = new Date(f_timestamp);
 	return
 			((date.getDate().length == 1) ? '0' : '') + date.getDate() + '.'
-			((date.getMonth()+1).length == 1) ? '0' : '') + date.getMonth() + '.'
+			(((date.getMonth()+1).length == 1) ? '0' : '') + date.getMonth() + '.'
 			date.getFullYear();
 }
 
@@ -246,7 +246,7 @@ function refreshInternshipOverview(f_internship_id) {
 		
 		if(internship_freedays.length != 0) {
 
-			for(int i = 0; i < internship_freedays.length; i++) {
+			for(i = 0; i < internship_freedays.length; i++) {
 				
 				$freedays.append('<tr><td>' + internship_freedays[i].type + '</td><td>' + getHumanReadableDate(internship_freedays[i].start) + '</td><td>' + getHumanReadableDate(internship_freedays[i].end) + '</td></tr>');
 			}
