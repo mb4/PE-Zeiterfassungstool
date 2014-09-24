@@ -16,7 +16,7 @@ html, body {
 }
 
 body {
-	padding: 65px 0 0 0;
+	padding: 70px 0 0 0;
 	font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -28,6 +28,10 @@ button {
 /**
  * Customizations
  */
+ 
+.navbar {
+	border-bottom: 5px solid rgb(66, 139, 202);
+}
 
 /* datepicker in foreground so it is displayed infront of modals */
 .datepicker {
@@ -70,6 +74,7 @@ button {
 	display: block;
 	width: 100%;
 	border: 0;
+	text-align: center;
 }
 
 /* working period block */
