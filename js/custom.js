@@ -418,15 +418,37 @@ newestInternship = db.queryAll('internship', {
 					});
 
 if(newestInternship.length != 0) {
+
 	window.internship = newestInternship[0].unique_id;
+	
+	window.overviewDay = getMidnightTimestamp( Date.now() );
+	window.overviewWeek = getWeekTimestamp( Date.now() );
+	
+	refreshInternshipOverview();
+	refreshWeekOverview();
+	refreshDayOverview();
+
+// no internship available, show welcome modal
+} else {
+
+	$('#welcome').modal({
+		backdrop: 'static',
+		keyboard: false
+	});
+	
+	// button handler for closing welcome and opening internship form
+	$('#welcome-button-close').on('click', function() {
+
+		$('#welcome').modal('hide');
+		
+		$('#form-internship-close').hide();
+		$('#form-internship-cancel').hide();
+		$('#form-internship').modal({
+			backdrop: 'static',
+			keyboard: false
+		});
+	});
 }
-
-window.overviewDay = getMidnightTimestamp( Date.now() );
-window.overviewWeek = getWeekTimestamp( Date.now() );
-
-refreshInternshipOverview();
-refreshWeekOverview();
-refreshDayOverview();
 
 // add datepickers to internship form
 $('#form-internship-start').datepicker();
@@ -453,6 +475,9 @@ $('#edit-internship-button').on('click', function() {
 		$('#form-internship-start').val( getHumanReadableDate(internship_data[0].start) ).attr('data-date', getHumanReadableDate(internship_data[0].start) );
 		$('#form-internship-end').val( getHumanReadableDate(internship_data[0].end) ).attr('data-date', getHumanReadableDate(internship_data[0].end) );
 		
+		$('#form-internship-cancel').show();
+		$('#form-internship-close').show();
+		
 		// open modal with form
 		$('#form-internship').modal();
 	} else {
@@ -467,6 +492,9 @@ $('#edit-internship-button').on('click', function() {
 
 //create internship button handlers
 $('#create-internship-button').on('click', function() {
+	
+	$('#form-internship-cancel').show();
+	$('#form-internship-close').show();
 	
 	// open modal with form
 	$('#form-internship').modal();

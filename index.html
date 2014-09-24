@@ -201,13 +201,13 @@
 
 
 
-		<!-- Modals -->
+		<!-- Modal internship form -->
 		<div class="modal fade" id="form-internship" tabindex="-1" role="dialog">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
-		        <h4 class="modal-title" id="form-internship-title">Edit internship</h4>
+		        <button type="button" class="close" data-dismiss="modal" id="form-internship-close"><span>&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="form-internship-title">Create new internship</h4>
 		      </div>
 		      <div class="modal-body">
 		      	<form role="form">
@@ -216,7 +216,7 @@
 				        	
 							<div class="form-group">
 								<label for="form-internship-name">Internship title</label>
-								<input type="text" class="form-control" id="form-internship-name" placeholder="Name for internship">
+								<input type="text" class="form-control" id="form-internship-name" placeholder="e.g. PE5 - Hamburg">
 							</div>					
 						</div>
 						<div class="col-xs-12 col-md-5">
@@ -239,8 +239,25 @@
 				</form>
 		      </div>
 		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary">Save changes</button>
+		        <button type="button" class="btn btn-default" data-dismiss="modal" id="form-internship-cancel">Cancel &amp; close</button>
+		        <button type="button" class="btn btn-primary" id="form-internship-save">Save changes</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal welcome -->
+		<div class="modal fade" id="welcome" tabindex="-1" role="dialog">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title" id="form-internship-title">Welcome</h4>
+		      </div>
+		      <div class="modal-body">
+				<p>Welcome to TimeTrackTool, your tool for easy tracking of working time.</p>
+				<p>All time tracked is directly recorded for an internship or project.<br>To start, please create an internship first.</p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id="welcome-button-close">Create new internship</button>
 		      </div>
 		    </div>
 		  </div>
