@@ -290,6 +290,14 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
          {
              f_vacation_days[x] = getMidnightTimestamp(f_vacation_days[x]);
          }
+         
+         //delete working periods outside new internship period
+         db.deleteRows("working_period", function(row){
+            if(row.internship_id == f_unique_id && (row.day_timestamp < f_start || row.day_timestamp > f_end))
+                return true;
+            else
+                return false;
+         });
         
         //delete days outside new intership period
         db.deleteRows("day", function(row){
