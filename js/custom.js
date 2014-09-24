@@ -13,6 +13,8 @@
 /////////////////////////////////////////////
 
 window.internship = 0; // currently selected and displayed internship
+window.overviewDay = 0; // currently displayed day
+window.overviewWeek = 0; // currently displayed week
 window.trackingStart = 0; // timestamp saved at start of current tracking
 
 
@@ -31,7 +33,7 @@ if( db.isNew() ) {
     // create tables
     db.createTable('internship', ['unique_id', 'name', 'start', 'end', 'daily_hours']);
     db.createTable('day', ['internship_id', 'timestamp', 'type']);
-    db.createTable('working_period', ['unique_id', 'day_id', 'start', 'end', 'info']);
+    db.createTable('working_period', ['unique_id', 'internship_id', 'day_timestamp', 'start', 'end', 'info']);
 
     // save tables to localStorage
     db.commit();
@@ -48,6 +50,7 @@ console.debug( JSON.parse( db.serialize() ) );
 // BASIC FUNCTIONS                         //
 /////////////////////////////////////////////
 
+
 /**
  * generate a unique id with given timestamp, salt and browser's user agent
  * @param {timestamp} timestamp timestamp of object
@@ -59,6 +62,7 @@ function generateUniqueId(timestamp, salt) {
 	return calcMD5( timestamp + salt + navigator.userAgent );
 }
 
+
 /**
  * Create a date for output on UI from a given timestamp
  * 
@@ -68,11 +72,16 @@ function generateUniqueId(timestamp, salt) {
 function getHumanReadableDate(f_timestamp) {
 	
 	var date = new Date(f_timestamp);
-	return
-			((date.getDate().length == 1) ? '0' : '') + date.getDate() + '.'
-			(((date.getMonth()+1).length == 1) ? '0' : '') + date.getMonth() + '.'
-			date.getFullYear();
+	
+	
+	var humanReadableDate =	'' + (((date.getDate()+'').length == 1) ? '0' : '') + date.getDate() + '.' +
+							(((date.getMonth()+1+'').length == 1) ? '0' : '') + (date.getMonth()+1) + '.' +
+							date.getFullYear();
+							
+	console.debug(humanReadableDate);//TODO
+	return humanReadableDate;
 }
+
 
 /**
  * converts a period (start, end) into a list of days
@@ -96,13 +105,14 @@ function convertPeriodToDayList(f_start, f_end) {
     return days;
 }
 
+
 /**
  * calculates for a given timestamp the midnight timestamp of the particular day
  * 
  * @param {timestamp/int} f_timestamp
  * @returns {timestamp/int} midnight timestamp
  */
-function getMidnightTimestamp(f_timestamp){
+function getMidnightTimestamp(f_timestamp) {
     
     var date = new Date(f_timestamp);
     date.setMilliseconds(0);
@@ -112,6 +122,64 @@ function getMidnightTimestamp(f_timestamp){
     return date.getTime();
 }
 
+
+/**
+ * calculates for a given timestamp the midnight timestamp of the week's monday
+ * 
+ * @param {timestamp/int} f_timestamp
+ * @returns {timestamp/int} midnight timestamp of week's monday
+ */
+function getWeekTimestamp(f_timestamp) {
+    
+    var date = new Date(f_timestamp);
+    var dayOfWeek = date.getDay();
+    
+    if(dayOfWeek == 0) dayOfWeek = 7;
+    
+    // calculate monday (sunday = 0, monday = 1, ...)
+    if(dayOfWeek != 1)
+    	date.setDate( date.getDate() - (dayOfWeek-1) );
+    
+    return getMidnightTimestamp( date.getTime() );
+}
+
+	
+/**
+ * creates/updates a working period belonging to a day
+ * 
+ * @param {timestamp/int} f_start
+ * @param {timestamp/int} f_end
+ * @param {string} f_internship_id
+ * @param {string} f_info optional
+ * @param {timestamp/int} f_day_timestamp optional midnight timestamp of day
+ * @param {string} f_unique_id optional unique ID of existing working period
+ */
+function createOrUpdateWorkingPeriod(f_start, f_end, f_internship_id, f_info, f_day_timestamp, f_unique_id) {
+
+	f_info = f_info || null;
+	f_day_timestamp = f_day_timestamp || getMidnightTimestamp(f_start);
+    f_unique_id = f_unique_id || generateUniqueId(f_start, f_internship_id + f_day_timestamp);
+
+    
+    db.insertOrUpdate('working_period',
+    {
+    	unique_id: f_unique_id,
+        internship_id: f_internship_id, 
+        day_timestamp: f_day_timestamp
+    },
+    {
+    	unique_id: f_unique_id,
+        internship_id: f_internship_id, 
+        day_timestamp: f_day_timestamp, 
+        start: f_start,
+        end: f_end,
+        info: f_info
+    });
+    
+    db.commit();
+}
+
+	
 /**
  * creates/updates a day belonging to an internship
  * 
@@ -137,6 +205,7 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
     
     db.commit();
 }
+
 
 /**
  * creates/updates an internship
@@ -185,10 +254,10 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
                 unique_id: f_unique_id
             },
             {
-		unique_id: f_unique_id,
-		name: f_name,
-		start: f_start,
-		end: f_end,
+				unique_id: f_unique_id,
+				name: f_name,
+				start: f_start,
+				end: f_end,
                 daily_hours: f_daily_hours
             });
             
@@ -222,6 +291,7 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
 
 /**
  * Updates the internship view with data from given internship given by its unique_id
+ *
  * @param {uid} f_internship_id unique ID of internship
  */
 function refreshInternshipOverview(f_internship_id) {
@@ -254,8 +324,33 @@ function refreshInternshipOverview(f_internship_id) {
 			$freedays.append('<tr><td>No free days added for this internship.</td></tr>');
 		}
 	}
-} 
+}
 
+
+/**
+ * updates the week overview based on the given timestamp 
+ *
+ * @param {timestamp/int} f_timestamp timestamp in a certain week
+ */
+function refreshWeekOverview(f_timestamp) {
+
+	f_timestamp = getWeekTimestamp(f_timestamp) || window.overviewWeek;
+	//TODO
+}
+
+
+/**
+ * updates the day overview based on the given timestamp 
+ *
+ * @param {timestamp/int} f_timestamp timestamp in a certain week
+ */
+function refreshDayOverview(f_timestamp) {
+
+	f_timestamp = getMidnightTimestamp(f_timestamp) || window.overviewDay;
+
+	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
+	//TODO
+}
 
 
 
@@ -265,7 +360,7 @@ function refreshInternshipOverview(f_internship_id) {
 // APPLICATION STARTUP                     //
 /////////////////////////////////////////////
 
-// set initial inernship id to newest internship
+// set initial internship id to newest internship
 newestInternship = db.queryAll('internship', {
 						sort: [['timestamp', 'DESC']],
 						limit: 1
@@ -274,6 +369,13 @@ newestInternship = db.queryAll('internship', {
 if(newestInternship.length != 0) {
 	window.internship = newestInternship[0].unique_id;
 }
+
+window.overviewDay = getMidnightTimestamp( Date.now() );
+window.overviewWeek = getWeekTimestamp( Date.now() );
+
+refreshInternshipOverview();
+refreshWeekOverview();
+refreshDayOverview();
 
 // add datepickers to internship form
 $('#form-internship-start').datepicker();
@@ -333,20 +435,21 @@ $('#tracking-button').on('click', function(e) {
 
 	// stop tracking
 	} else {
-		
+
 		// change text and color of button
 		button.addClass('btn-success').removeClass('btn-danger').find('strong').text('Start tracking');
-		
+
 		// stop timer for tracking
-		// TODO
 		$('#tracking-time').runner('stop');
-		
+
 		// save to working_period
-		// TODO
-		
+		createOrUpdateWorkingPeriod(window.trackingStart, Date.now(), window.internship);
+
 		// add working period to day overview (if displayed day there is current day)
-		// TODO
-		
+		if( getMidnightTimestamp( Date.now() ) == window.overviewDay) {
+
+			//TODO add to day overview
+		}		
 	}
 });
 
