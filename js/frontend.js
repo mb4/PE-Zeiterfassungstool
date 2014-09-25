@@ -104,9 +104,9 @@ function refreshInternshipOverview(f_internship_id) {
 		//TODO
 		
 		// fill statistics
-		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) );
-		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) );
-		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) );
+		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) +' h' );
+		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) +' h' );
+		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) +' h' );
 	}
 }
 
@@ -199,9 +199,9 @@ function refreshWeekOverview(f_timestamp) {
 	}
 	
 	// week statistics
-	$('#overview-week-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
-	$('#overview-week-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
-	$('#overview-week-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) +' h' );
+	$('#overview-week-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) +' h' );
+	$('#overview-week-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) +' h' );
 }
 
 
