@@ -69,9 +69,16 @@ function getHumanReadableHoursFromDecimal(f_decimal) {
 	var humanHours = (''+f_decimal).split('.');
 	
 	var returnHours = humanHours[0];
-	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed() + '';
+	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed();
 	
-	return returnHours + ':' + ((returnMinutes.length == 1) ? '0'+returnMinutes : returnMinutes);
+	// if round error (60 minutes), adjust values
+	if(returnMinutes == 60) {
+		
+		returnHours++;
+		returnMinutes = 0;
+	}
+	
+	return returnHours + ':' + (((''+returnMinutes).length == 1) ? '0'+returnMinutes : returnMinutes);
 }
 
 
