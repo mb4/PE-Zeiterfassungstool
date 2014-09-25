@@ -63,6 +63,22 @@ function generateUniqueId(timestamp, salt) {
 	return calcMD5( timestamp + salt + navigator.userAgent );
 }
 
+/**
+ * return index of the object in an array whose specified attribute has the specified value
+ * 
+ * @param {array of objects} f_array
+ * @param {string} f_attr_name
+ * @param {any} f_attr_value
+ * @returns {Number}
+ */
+function indexOfObjectAttributeValueInObjectArray(f_array, f_attr_name, f_attr_value)
+{
+    for (var x=0; x<f_array.length; x++)
+    {
+        if (f_array[x][f_attr_name] == f_attr_value) return x;
+    }
+    return -1;
+}
 
 /**
  * converts a period (start, end) into a list of days
@@ -222,8 +238,10 @@ function createOrUpdateWorkingPeriod(f_start, f_end, f_internship_id, f_info, f_
  * @param {timestamp/int} f_timestamp
  * @param {string} f_type
  */
-function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
+function createOrUpdateDay(f_internship_id, f_timestamp, f_type, f_info)
 {
+    f_info = f_info || "";
+    
     //get midnight timestamp for day
     f_timestamp = getMidnightTimestamp(f_timestamp);
     
@@ -235,7 +253,8 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
     {
         internship_id: f_internship_id, 
         timestamp: f_timestamp, 
-        type: f_type
+        type: f_type,
+        info: f_info
     });
     
     db.commit();
@@ -259,14 +278,14 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type)
 function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holidays, f_vacation_days, f_unique_id) {
 	
     //assign unique_id if internship is new
-	f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
+    f_unique_id = f_unique_id || generateUniqueId(f_start, f_name);
     
-	//get midnight timestamps
-	f_start = getMidnightTimestamp(f_start);
-	f_end = getMidnightTimestamp(f_end);
+    //get midnight timestamps
+    f_start = getMidnightTimestamp(f_start);
+    f_end = getMidnightTimestamp(f_end);
      for (var x=0; x < f_holidays.length; x++)
      {
-         f_holidays[x] = getMidnightTimestamp(f_holidays[x]);
+         f_holidays[x].timestamp = getMidnightTimestamp(f_holidays[x].timestamp);
      }
      for (var x=0; x < f_vacation_days.length; x++)
      {
@@ -306,9 +325,16 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
      for(var timestamp = f_start; timestamp <= f_end; timestamp+=1000*60*60*24)
      {
         var date = new Date(timestamp);
+        var holiday_index = indexOfObjectAttributeValueInObjectArray(f_holidays, "timestamp", date.getTime());
         var type;
-        if (f_holidays.indexOf(date.getTime()) >= 0)
+        var info;
+
+        //if (f_holidays.indexOf(date.getTime()) >= 0) //ToDo: remove
+        if (holiday_index >= 0)
+        {
             type = "Holiday";
+            info = f_holidays[holiday_index].info;
+        }
         else if (date.getDay() == 0 || date.getDay() == 6)
             type = "Weekend";
         else if (f_vacation_days.indexOf(date.getTime()) >= 0)
@@ -316,13 +342,14 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
         else 
             type = "Working Day";
         
-        createOrUpdateDay(f_unique_id, timestamp, type);
+        createOrUpdateDay(f_unique_id, timestamp, type, info);
      }
                 
 	db.commit();
 	
 	return f_unique_id;
 }
+
 
 /**
  * deletes an internship + all corresponding days and working periods
@@ -338,27 +365,6 @@ function deleteInternship(f_internship_id)
     db.commit();
 }
 
-//ToDo: remove
-//function createOrUpdateWorkingPeriod(f_internship_id, f_day_timestamp, f_start, f_end, f_info, f_unique_id)
-//{
-//    //assign unique_id if working_period is new
-//    f_unique_id = f_unique_id || generateUniqueId(f_start, f_end+f_internship);
-//    
-//    db.insertOrUpdate("working_period",
-//        {
-//            unique_id:f_unique_id
-//        },
-//        {
-//            unique_id:f_unique_id,
-//            internship_id:f_internship_id,
-//            day_timestamp:f_day_timestamp,
-//            start: f_start,
-//            end: f_end,
-//            info: f_info
-//        });
-//     
-//     db.commit();
-//}
 
 /**
  * deletes the specified working period

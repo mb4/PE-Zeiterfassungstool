@@ -242,19 +242,22 @@ function refreshDayOverview(f_timestamp) {
 /**
  * returns a dynamic block (dynblock) displaying a vacation period or holiday
  * 
- * @param {int} f_id (DOM id)
  * @param {string} f_type
  * @param {string} f_info
  * @param {timestamp} f_start
  * @param {timestamp} f_end
- * @returns {html} dynblock
+ * @returns {Number} id (DOM)
  */
-function getDynblock(f_id, f_type, f_info, f_start, f_end)
+function addDynblock(f_type, f_info, f_start, f_end)
 {
     //handle input data
     f_info = f_info || "";
     typeof(f_start) == "number" ? f_start=getHumanReadableDate(f_start) : f_start = "";
-    typeof(f_end) == "number" ? f_start=getHumanReadableDate(f_end) : f_end = "";
+    typeof(f_end) == "number" ? f_end=getHumanReadableDate(f_end) : f_end = "";
+    
+    //retrieve and increment id counter
+    var id = Number($('#dynblock-wrapper').attr("data-counter"));
+    $('#dynblock-wrapper').attr("data-counter", String(id+1));
     
     //define first column depending on dynblock type
     var column1_description = f_type == "Vacation" ? "Start date" : "Date";
@@ -265,33 +268,44 @@ function getDynblock(f_id, f_type, f_info, f_start, f_end)
     
     var column2 = f_type == "Vacation" ?
     	'<div class="input-group">'
-			+'<input type="text" id="form-internship-dynblock-col2-'+f_id+'" class="form-control input-sm" data-date="'+f_end+'" data-date-format="dd.mm.yyyy" value="'+f_end+'" placeholder="DD.MM.YYYY">'
+			+'<input type="text" id="form-internship-dynblock-col2-'+id+'" class="form-control input-sm" data-date="'+f_end+'" data-date-format="dd.mm.yyyy" value="'+f_end+'" placeholder="DD.MM.YYYY">'
 			+'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>'
 		+'</div>'
 		:
-		'<input type="text" id="form-internship-dynblock-col2-'+f_id+'" class="form-control input-sm" value="'+f_info+'" placeholder="e.g. Christmas">';
+		'<input type="text" id="form-internship-dynblock-col2-'+id+'" class="form-control input-sm" value="'+f_info+'" placeholder="e.g. Christmas">';
     
-    return '<div id="form-internship-dynblock-'+f_id+'" class="row">'
+    var dynblock = '<div id="form-internship-dynblock-'+id+'" data-id="'+id+'" class="row">'
     			+'<div class="col-xs-6 col-md-3">'
-                    +'<a class="btn btn-danger btn-xs" id="form-internship-dynblock-delete-'+f_id+'">&times;</a>&nbsp;'
-                    +'<strong id="form-internship-dynblock-type-'+f_id+'">'+f_type+'</strong>'
+                    +'<a class="btn btn-danger btn-xs" id="form-internship-dynblock-delete-'+id+'">&times;</a>&nbsp;'
+                    +'<strong id="form-internship-dynblock-type-'+id+'">'+f_type+'</strong>'
                 +'</div>'
                 +'<div class="col-xs-12 col-md-4">'
                     +'<div class="form-group">'
-                        +'<label class="small for="form-internship-dynblock-col1-'+f_id+'">' + column1_description + '</label>'
+                        +'<label class="small for="form-internship-dynblock-col1-'+id+'">' + column1_description + '</label>'
                         +'<div class="input-group">'
-                            +'<input type="text" id="form-internship-dynblock-col1-'+f_id+'" class="form-control input-sm" data-date="" data-date-format="dd.mm.yyyy" value="'+f_start+'" placeholder="DD.MM.YYYY">\n'
+                            +'<input type="text" id="form-internship-dynblock-col1-'+id+'" class="form-control input-sm" data-date="" data-date-format="dd.mm.yyyy" value="'+f_start+'" placeholder="DD.MM.YYYY">\n'
                             +'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\n'
                         +'</div>\n'
                     +'</div>\n'
                 +'</div>\n'
                 +'<div class="col-xs-12 col-md-5">\n'
                     +'<div class="form-group">\n'
-                    +'<label class="small" for="form-internship-dynblock-col2-'+f_id+'">'+column2_description+'</label>\n'
+                    +'<label class="small" for="form-internship-dynblock-col2-'+id+'">'+column2_description+'</label>\n'
                         + column2
                     +'</div>\n'
                 +'</div>\n'
             +'</div>\n'
+    
+    $("#dynblock-wrapper").prepend(dynblock);
+    $('#form-internship-dynblock-col1-'+id).datepicker();
+    if (f_type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
+    
+    // eventhandler dynblock delete (deletes vacation period or holiday from internship form)
+    $('#form-internship-dynblock-delete-'+id).on('click', function(e) {
+        $('#form-internship-dynblock-'+id).remove();
+    });
+    
+    return id;
 }
 
 
@@ -394,10 +408,7 @@ $('#edit-internship-button').on('click', function() {
                 var periods = getHolidaysAndVacationPeriods(window.internship);
                 for (var x=0; x<periods.length; x++)
                 {
-                    //add dynblock and initialize datepickers
-                    $("#dynblock-wrapper").append(getDynblock(x, periods[x].type, periods[x].info, periods[x].start, periods[x].end));
-                    $('#form-internship-dynblock-col1-'+x).datepicker();
-                    if (periods[x].type == "Vacation") $('#form-internship-dynblock-col2-'+x).datepicker();
+                    addDynblock(periods[x].type, periods[x].info, periods[x].start, periods[x].end);
                 }
 		
 		$('#form-internship-cancel').show();
@@ -475,6 +486,26 @@ $('#form-internship-save').on('click', function() {
 	var i_start = $('#form-internship-start').val();
 	var i_end = $('#form-internship-end').val();
 	var i_id = $('#form-internship-id').val();
+        
+        // get holidays and vacation periods
+        var holidays = [];
+        var vacation_days = [];
+        $('#dynblock-wrapper > div').each(function(){
+            var p_id = $(this).attr("data-id");
+            switch($('#form-internship-dynblock-type-'+p_id).text())
+            {
+                case "Vacation":
+                    var p_start = getTimestampFromDate($('#form-internship-dynblock-col1-'+p_id).val());
+                    var p_end = getTimestampFromDate($('#form-internship-dynblock-col2-'+p_id).val());
+                    vacation_days = vacation_days.concat(convertPeriodToDayList(p_start, p_end));
+                    break;
+                case "Holiday":
+                    var p_start = getTimestampFromDate($('#form-internship-dynblock-col1-'+p_id).val());
+                    var p_info = $('#form-internship-dynblock-col2-'+p_id).val();
+                    holidays.push({timestamp:p_start,info:p_info});
+                    break;
+            }
+        });
 	
 	// validation check
 	if(i_name.length == 0) {
@@ -501,7 +532,7 @@ $('#form-internship-save').on('click', function() {
 			// save updated entry
 			if(i_id.length != 0) {
 
-				createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], [], i_id);
+				createOrUpdateInternship(i_name, startDate, endDate, 7.8, holidays, vacation_days, i_id);
 				
 				// if the edited internship is currently displayed, update view
 				if(i_id == window.internship) {
@@ -513,7 +544,7 @@ $('#form-internship-save').on('click', function() {
 			// create new entry
 			} else {
 			
-				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], []);
+				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, holidays, vacation_days);
 				
 				refreshInternshipOverview(update_id);
 				window.internship = update_id;
@@ -554,12 +585,14 @@ $('#form-internship-delete').on('click', function() {
 $('.btn-add-dynblock').on('click', function(e) {
    
    var type = $(this).attr("data-type");
-   var id = $("#dynblock-wrapper > div").length;
+   //var id = $("#dynblock-wrapper > div").length; //ToDo: remove
    
-   $("#dynblock-wrapper").prepend(getDynblock(id, type));
+   addDynblock(type);
+   
+   /*$("#dynblock-wrapper").prepend(getDynblock(id, type));
    $('#form-internship-dynblock-col1-'+id).datepicker();
    if (type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
-   
+   */
 });
 
 
