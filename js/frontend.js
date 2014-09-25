@@ -317,13 +317,23 @@ $('#tracking-button').on('click', function(e) {
 		$('#tracking-time').runner('stop');
 
 		// save to working_period
-		createOrUpdateWorkingPeriod(window.trackingStart, Date.now(), window.internship);
+		var dateNow = Date.now();
+		createOrUpdateWorkingPeriod(window.trackingStart, dateNow, window.internship);
 
 		// add working period to day overview (if displayed day there is current day)
 		if( getMidnightTimestamp( Date.now() ) == window.overviewDay) {
 
-		//TODO add to day overview
-		}		
+			refreshDayOverview();
+		}
+		
+		// refresh week overview if current day is displayed
+		if( getWeekTimestamp( Date.now() ) == window.overviewWeek ) {
+		
+			refreshWeekOverview();
+		}
+		
+		// reset trackingStart
+		window.trackingStart = 0;
 	}
 });
 
