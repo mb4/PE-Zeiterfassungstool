@@ -82,6 +82,22 @@ function getHumanReadableHoursFromDecimal(f_decimal) {
 }
 
 
+/**
+ * Return timestamp from given hours in human-readable format and day-representing timestamp
+ * 
+ * @returns {timestamp/int} timestamp
+ */
+function getTimestampFromHours(f_timestamp, f_hours) {
+	
+	var sp = f_hours.split(':');
+	var date = new Date( getMidnightTimestamp(f_timestamp) );
+	date.setHours( parseInt(sp[0]) );
+	date.setMinutes( parseInt(sp[1]) );
+	
+	return date.getTime();
+}
+
+
 
 
 
@@ -146,8 +162,7 @@ function refreshWeekOverview(f_timestamp) {
 			currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
 			
 			// set type of day
-			$('#overview-week select.overview-week-' + i).removeAttr('disabled');//.find('option').removeAttr('selected');
-			//$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');//TODO
+			$('#overview-week select.overview-week-' + i).removeAttr('disabled');
 			$('#overview-week select.overview-week-'+i).val( currentDay[0].type );
 			
 			// save timestamp on select element and weekday table element for direct access
@@ -180,7 +195,6 @@ function refreshWeekOverview(f_timestamp) {
 			// clickable column to select day overview
 			$('#overview-week tbody td.overview-week-'+i).on('click', function(e) {
 			
-				console.log( $(e.target).attr('class'), $(e.target).attr('data-timestamp') );
 				refreshDayOverview( $(e.target).attr('data-timestamp') );
 			});
 			
@@ -219,11 +233,19 @@ function refreshWeekOverview(f_timestamp) {
  */
 function refreshDayOverview(f_timestamp) {
 
+	//TODO add button for creating new working periods
+	//TODO add day statistics
+
 	f_timestamp = getMidnightTimestamp( parseInt(f_timestamp) ) || window.overviewDay;
 	window.overviewDay = f_timestamp;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
 	$('#overview-day-periods').empty();
+	
+	var day = getDays(window.internship, f_timestamp);
+	
+	// fill day info
+	$('#overview-day-info').text(day[0].info);
 	
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
@@ -235,13 +257,86 @@ function refreshDayOverview(f_timestamp) {
 			 pStart = getHumanReadableHours(periods[i].start);
 			 pEnd = getHumanReadableHours(periods[i].end);
 		
-			$('#overview-day-periods').append('<tr><td>' + pStart + '</td><td>' + pEnd + '</td><td class="text-right"><a href="#" id="overview-day-edit-' + periods + '"><span class="glyphicon glyphicon-pencil"></span></a></td></tr>');
-			//TODO edit handler
+			$('#overview-day-periods').append(
+				'<tr id="overview-day-' + i + '">' +
+					'<td class="form-inline">' +
+						'<strong>From</strong>&nbsp; ' +
+						'<input class="form-control" id="overview-day-start-' + i + '" placeholder="hh:mm" value="' + pStart + '" type="text" disabled>' +
+					'</td>' +
+					'<td class="form-inline">' +
+						'<strong>to</strong>&nbsp; ' +
+						'<input class="form-control" id="overview-day-end-' + i + '" placeholder="hh:mm" value="' + pEnd + '" type="text" disabled>' +
+					'</td>' +
+					'<td class="text-right">' +
+						'<a href="#" id="overview-day-edit-' + i + '" data-index="' + i + '"><span class="glyphicon glyphicon-pencil"></span></a> ' +
+						'<a href="#" id="overview-day-save-' + i + '" data-index="' + i + '" data-uniqueid="' + periods[i].unique_id + '" class="text-success" style="display:none"><span class="glyphicon glyphicon-ok"></span></a> ' +
+						'<a href="#" id="overview-day-delete-' + i + '" data-index="' + i + '" data-uniqueid="' + periods[i].unique_id + '" class="text-danger" style="display:none"><span class="glyphicon glyphicon-remove"></span></a>' +
+					'</td>' +
+				'</tr>'
+				);
+			
+			$('#overview-day-edit-'+i).on('click', function(e) {
+			
+				var x = $(e.delegateTarget).attr('data-index');
+				
+				// show/hide buttons
+				$('#overview-day-edit-'+x).hide();
+				$('#overview-day-save-'+x).show();
+				$('#overview-day-delete-'+x).show();
+			
+				// enable input fields
+				$('#overview-day-start-'+x).removeAttr('disabled');
+				$('#overview-day-end-'+x).removeAttr('disabled');
+			});
+			
+			$('#overview-day-save-'+i).on('click', function(e) {
+			
+				var x = $(e.delegateTarget).attr('data-index');
+				var id = $(e.delegateTarget).attr('data-uniqueid');
+				
+				// save item
+				var wStart = getTimestampFromHours( window.overviewDay , $('#overview-day-start-'+x).val() );
+				var wEnd = getTimestampFromHours( window.overviewDay , $('#overview-day-end-'+x).val() );
+				
+				createOrUpdateWorkingPeriod(wStart, wEnd, window.internship, null, window.overviewDay, id);
+				
+				// update week overview, if current day is displayed
+				if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
+					refreshWeekOverview();
+				
+				// show/hide buttons
+				$('#overview-day-edit-'+x).show();
+				$('#overview-day-save-'+x).hide();
+				$('#overview-day-delete-'+x).hide();
+				
+				// disable input fields
+				$('#overview-day-start-'+x).attr('disabled','disabled');
+				$('#overview-day-end-'+x).attr('disabled','disabled');
+			});
+			
+			$('#overview-day-delete-'+i).on('click', function(e) {
+			
+				var x = $(e.delegateTarget).attr('data-index');
+				var id = $(e.delegateTarget).attr('data-uniqueid');
+				
+				// delete item
+				deleteWorkingPeriod(id);
+				$('#overview-day-'+x).remove();
+				
+				// show/hide buttons
+				$('#overview-day-edit-'+x).show();
+				$('#overview-day-save-'+x).hide();
+				$('#overview-day-delete-'+x).hide();
+				
+				// disable input fields
+				$('#overview-day-start-'+x).attr('disabled','disabled');
+				$('#overview-day-end-'+x).attr('disabled','disabled');
+			});
 		}
 	
 	// no working periods on this day
 	} else {
-	
+
 		$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');
 	}
 }
@@ -383,8 +478,7 @@ $('#edit-internship-button').on('click', function() {
 
 	// fill form with internship data
 	
-	//var internship_data = db.query('internship', {unique_id: window.internship}); //ToDo: remove!!!
-        var internship_data = getInternships(window.internship);
+    var internship_data = getInternships(window.internship);
 	
 	if(internship_data.length != 0) {
 		
@@ -529,6 +623,8 @@ $('#form-internship-save').on('click', function() {
 			}
 			
 			$('#form-internship').modal('hide');
+			
+			//TODO save current tracking if view changes because of new entry
 		}
 	}
 });
