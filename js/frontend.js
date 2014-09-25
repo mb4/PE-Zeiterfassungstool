@@ -5,7 +5,7 @@
  * 2014 (c) Marvin Botens, Stephan Giesau  *
  * 										   *
  * * * * * * * * * * * * * * * * * * * * * */
- 
+
 
 
 /////////////////////////////////////////////
@@ -21,7 +21,6 @@
 function getHumanReadableDate(f_timestamp) {
 	
 	var humanDate = new Date(f_timestamp);
-	
 	
 	return '' + (((humanDate.getDate()+'').length == 1) ? '0' : '') + humanDate.getDate() + '.' +
 				(((humanDate.getMonth()+1+'').length == 1) ? '0' : '') + (humanDate.getMonth()+1) + '.' +
@@ -50,9 +49,24 @@ function getTimestampFromDate(f_date) {
  * @param {float} hours in decimal format
  * @returns {string} hours in human-readable format
  */
-function getHumanReadableHours(f_hours) {
+function getHumanReadableHours(f_timestamp) {
 
-	var humanHours = (''+f_hours).split('.');
+	var humanDate = new Date(f_timestamp);
+	
+	return '' + humanDate.getHours() + ':' +
+			(((humanDate.getMinutes()+'').length == 1) ? '0' : '') + humanDate.getMinutes();
+}
+
+
+/**
+ * Create a H:i hours representation of a decimal float
+ * 
+ * @param {float} f_decimal hours in decimal format
+ * @returns {string} hours in human-readable format
+ */
+function getHumanReadableHoursFromDecimal(f_decimal) {
+
+	var humanHours = (''+f_decimal).split('.');
 	
 	var returnHours = humanHours[0];
 	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed() + '';
@@ -90,9 +104,9 @@ function refreshInternshipOverview(f_internship_id) {
 		//TODO
 		
 		// fill statistics
-		$('#overview-internship-stat-total').text( getHumanReadableHours( getTotalWorkTime(window.internship) ) );
-		$('#overview-internship-stat-worked').text( getHumanReadableHours( getCompletedWorkTime(window.internship) ) );
-		$('#overview-internship-stat-due').text( getHumanReadableHours( getDueWorkTime(window.internship) ) );
+		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) );
+		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) );
+		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) );
 	}
 }
 
@@ -178,9 +192,9 @@ function refreshWeekOverview(f_timestamp) {
 	}
 	
 	// week statistics
-	$('#overview-week-stat-total').text( getHumanReadableHours( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
-	$('#overview-week-stat-worked').text( getHumanReadableHours( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
-	$('#overview-week-stat-due').text( getHumanReadableHours( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
 }
 
 
@@ -194,6 +208,18 @@ function refreshDayOverview(f_timestamp) {
 	f_timestamp = getMidnightTimestamp(f_timestamp) || window.overviewDay;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
+	$('#overview-day-periods').empty();
+	
+	var periods = getWorkingPeriods(window.internship, f_timestamp);
+	var pStart, pEnd;
+	
+	for(i = 0; i < periods.length; i++) {
+	
+		 pStart = getHumanReadableHours(periods[i].start);
+		 pEnd = getHumanReadableHours(periods[i].end);
+	
+		$('#overview-day-periods').append('<tr><td>' + pStart + '</td><td>' + pEnd + '</td><td class="text-right"><a href="#" id="overview-day-edit-' + periods + '"><span class="glyphicon glyphicon-pencil"></span></a></td></tr>');
+	}
 	//TODO
 }
 
