@@ -9,6 +9,62 @@
 
 
 /////////////////////////////////////////////
+// FRONTEND HELPER FUNCTIONS               //
+/////////////////////////////////////////////
+
+/**
+ * Create a date for output on UI from a given timestamp
+ * 
+ * @param {timestamp/int} timestamp
+ * @returns {string} date in human-readable format
+ */
+function getHumanReadableDate(f_timestamp) {
+	
+	var humanDate = new Date(f_timestamp);
+	
+	
+	return '' + (((humanDate.getDate()+'').length == 1) ? '0' : '') + humanDate.getDate() + '.' +
+				(((humanDate.getMonth()+1+'').length == 1) ? '0' : '') + (humanDate.getMonth()+1) + '.' +
+				humanDate.getFullYear();
+}
+
+
+/**
+ * Return timestamp from a given date in human-readable format
+ * 
+ * @param {string} date in human-readable format
+ * @returns {timestamp/int} timestamp
+ */
+function getTimestampFromDate(f_date) {
+	
+	var sp = f_date.split('.');
+	var date = new Date(sp[2], parseInt(sp[1])-1, sp[0], 0, 0, 0, 0);
+	
+	return date.getTime();
+}
+
+
+/**
+ * Create a H:i hours representation of a decimal float
+ * 
+ * @param {float} hours in decimal format
+ * @returns {string} hours in human-readable format
+ */
+function getHumanReadableHours(f_hours) {
+
+	var humanHours = (''+f_hours).split('.');
+	
+	var returnHours = humanHours[0];
+	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed() + '';
+	
+	return returnHours + ':' + ((returnMinutes.length == 1) ? '0'+returnMinutes : returnMinutes);
+}
+
+
+
+
+
+/////////////////////////////////////////////
 // FRONTEND FUNCTIONS                      //
 /////////////////////////////////////////////
 
@@ -32,6 +88,11 @@ function refreshInternshipOverview(f_internship_id) {
 		// fill table with free days
 		$freedays = $('#overview-internship-freedays').empty();
 		//TODO
+		
+		// fill statistics
+		$('#overview-internship-stat-total').text( getHumanReadableHours( getTotalWorkTime(window.internship) ) );
+		$('#overview-internship-stat-worked').text( getHumanReadableHours( getCompletedWorkTime(window.internship) ) );
+		$('#overview-internship-stat-due').text( getHumanReadableHours( getDueWorkTime(window.internship) ) );
 	}
 }
 
@@ -117,9 +178,9 @@ function refreshWeekOverview(f_timestamp) {
 	}
 	
 	// week statistics
-	$('#overview-week-stat-total').text('Test');
-	$('#overview-week-stat-worked').text('Test');
-	$('#overview-week-stat-due').text('Test');
+	$('#overview-week-stat-total').text( getHumanReadableHours( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-worked').text( getHumanReadableHours( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-due').text( getHumanReadableHours( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
 }
 
 
@@ -246,6 +307,13 @@ $('#create-internship-button').on('click', function() {
 	
 	// open modal with form
 	$('#form-internship').modal();
+});
+
+
+// change internship button handler
+$('#change-internship-button').on('click', function() {
+
+	alert('Nothing happens.');
 });
 
 

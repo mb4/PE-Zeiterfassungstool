@@ -171,7 +171,7 @@
                 <div class="col-xs-12 col-md-3">
 	                <div class="well">
 	
-						<h3 id="overview-internship-name">Internship</h3>
+						<h3><span id="overview-internship-name">Internship</span> <button class="btn btn-xs btn-default" id="change-internship-button">change</button></h3>
 						
 						<hr>
 						
@@ -187,7 +187,6 @@
 						</div>
 						
 						<hr>
-						
 						<h4>Free days</h4>
 						<table class="table">
 							<tbody id="overview-internship-freedays">
@@ -210,6 +209,17 @@
 								</tr>
 							</tbody>
 						</table>
+						
+						<hr>
+						<h4>Statistics</h4>
+						<dl class="dl-horizontal">
+							<dt>Total</dt>
+							<dd id="overview-internship-stat-total"></dd>
+							<dt>Worked</dt>
+							<dd id="overview-internship-stat-worked" class="text-success"></dd>
+							<dt>Due</dt>
+							<dd id="overview-internship-stat-due" class="text-danger"></dd>
+						</dl>
 						
 						<hr>
 						<button class="btn btn-primary" id="edit-internship-button">
