@@ -434,12 +434,16 @@ function getWorkingPeriods(f_internship_id, f_start, f_end)
  * @param {uid/string} f_internship_id
  * @param {timestamp/int} f_start
  * @param {timestamp/int} f_end (optional)
- * @returns {array consisting of objects} days
+ * @param {array} f_types (optional)
+ * @returns {array of objects} days
  */
-function getDays(f_internship_id, f_start, f_end)
+function getDays(f_internship_id, f_start, f_end, f_types)
 {
     //if end is not specified only the start day will be returned
     f_end = f_end || f_start;
+    
+    //if types are not specified days for all types are returned
+    f_types = f_types || ["Working Day","Weekend","Holiday","Vacation"];
     
     //get midnight timestamp for start + end day
     f_start = getMidnightTimestamp(f_start);
@@ -447,10 +451,21 @@ function getDays(f_internship_id, f_start, f_end)
     
     //query all days in specified time frame
     var days = db.query("day", function(row){
-      return (row.internship_id == f_internship_id && (f_start <= row.timestamp && row.timestamp <= f_end)) ? true : false
+      return (row.internship_id == f_internship_id && f_types.indexOf(row.type) >= 0 && (f_start <= row.timestamp && row.timestamp <= f_end)) ? true : false
     });
     
     return days;
+}
+
+/**
+ * returns the specified/ all internships
+ * 
+ * @param {uid/string} f_internship_id (optional)
+ * @returns {array with objects} internship
+ */
+function getInternships(f_internship_id)
+{
+    return typeof(f_internship_id) == "string" ? db.query("internship", {unique_id:f_internship_id}) : db.query("internship");
 }
 
 //ToDO: remove
