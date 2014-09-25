@@ -212,6 +212,8 @@ function createOrUpdateWorkingPeriod(f_start, f_end, f_internship_id, f_info, f_
     });
     
     db.commit();
+    
+    return f_unique_id;
 }
 
 	

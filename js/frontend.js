@@ -195,7 +195,7 @@ function refreshWeekOverview(f_timestamp) {
 			// clickable column to select day overview
 			$('#overview-week tbody td.overview-week-'+i).on('click', function(e) {
 			
-				refreshDayOverview( $(e.target).attr('data-timestamp') );
+				refreshDayOverview( $(e.delegateTarget).attr('data-timestamp') );
 			});
 			
 			// output periods
@@ -227,6 +227,115 @@ function refreshWeekOverview(f_timestamp) {
 
 
 /**
+ * add a working period block to day overview
+ *
+ * @param {string} id unique_id of displayed entry. If new period, set null / don't set
+ * @param {int} i counter for element ids
+ * @param {timestamp} start starttime of period
+ * @param {timestamp} end endtime of period
+ *
+ * @returns {int} i element counter of current working period block
+ */
+function addWorkingPeriodBlock(id, i, start, end) {
+
+	id = id || null;
+	i = i || $('#overview-day-periods tr').length;
+	start = start || getHumanReadableHours( window.overviewDay );
+	end = end || getHumanReadableHours( window.overviewDay + 3600*1000 );
+	
+	// create a new entry
+	if(id == null) {
+		id = createOrUpdateWorkingPeriod( getTimestampFromHours(window.overviewDay, start), getTimestampFromHours(window.overviewDay, end), window.internship);
+		console.log(id);
+	}
+
+	$('#overview-day-periods').append(
+				'<tr id="overview-day-' + i + '">' +
+					'<td class="form-inline">' +
+						'<strong>From</strong>&nbsp; ' +
+						'<input class="form-control" id="overview-day-start-' + i + '" placeholder="hh:mm" value="' + start + '" type="text" disabled>' +
+					'</td>' +
+					'<td class="form-inline">' +
+						'<strong>to</strong>&nbsp; ' +
+						'<input class="form-control" id="overview-day-end-' + i + '" placeholder="hh:mm" value="' + end + '" type="text" disabled>' +
+					'</td>' +
+					'<td class="text-right">' +
+						'<a href="#" id="overview-day-edit-' + i + '" data-index="' + i + '"><span class="glyphicon glyphicon-pencil"></span></a> ' +
+						'<a href="#" id="overview-day-save-' + i + '" data-index="' + i + '" data-uniqueid="' + id + '" class="text-success" style="display:none"><span class="glyphicon glyphicon-ok"></span></a> ' +
+						'<a href="#" id="overview-day-delete-' + i + '" data-index="' + i + '" data-uniqueid="' + id + '" class="text-danger" style="display:none"><span class="glyphicon glyphicon-remove"></span></a>' +
+					'</td>' +
+				'</tr>'
+			);
+			
+	$('#overview-day-edit-'+i).on('click', function(e) {
+	
+		var x = $(e.delegateTarget).attr('data-index');
+		
+		// show/hide buttons
+		$('#overview-day-edit-'+x).hide();
+		$('#overview-day-save-'+x).show();
+		$('#overview-day-delete-'+x).show();
+	
+		// enable input fields
+		$('#overview-day-start-'+x).removeAttr('disabled');
+		$('#overview-day-end-'+x).removeAttr('disabled');
+	});
+	
+	$('#overview-day-save-'+i).on('click', function(e) {
+	
+		var x = $(e.delegateTarget).attr('data-index');
+		var id = $(e.delegateTarget).attr('data-uniqueid');
+		
+		// save item
+		var wStart = getTimestampFromHours( window.overviewDay , $('#overview-day-start-'+x).val() );
+		var wEnd = getTimestampFromHours( window.overviewDay , $('#overview-day-end-'+x).val() );
+		
+		createOrUpdateWorkingPeriod(wStart, wEnd, window.internship, null, window.overviewDay, id);
+		
+		// update week overview, if current day is displayed
+		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
+			refreshWeekOverview();
+		
+		// show/hide buttons
+		$('#overview-day-edit-'+x).show();
+		$('#overview-day-save-'+x).hide();
+		$('#overview-day-delete-'+x).hide();
+		
+		// disable input fields
+		$('#overview-day-start-'+x).attr('disabled','disabled');
+		$('#overview-day-end-'+x).attr('disabled','disabled');
+	});
+	
+	$('#overview-day-delete-'+i).on('click', function(e) {
+	
+		var x = $(e.delegateTarget).attr('data-index');
+		var id = $(e.delegateTarget).attr('data-uniqueid');
+		
+		// delete item
+		deleteWorkingPeriod(id);
+		
+		// do not completely remove from list so id count is still correct, just hide from user
+		$('#overview-day-'+x).hide();
+		
+		// update week overview, if current day is displayed
+		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
+			refreshWeekOverview();
+		
+		// show/hide buttons
+		$('#overview-day-edit-'+x).show();
+		$('#overview-day-save-'+x).hide();
+		$('#overview-day-delete-'+x).hide();
+		
+		// disable input fields
+		$('#overview-day-start-'+x).attr('disabled','disabled');
+		$('#overview-day-end-'+x).attr('disabled','disabled');
+	});
+	
+	return i;
+}
+
+
+/**
  * updates the day overview based on the given timestamp 
  *
  * @param {timestamp/int} f_timestamp timestamp in a certain week
@@ -241,103 +350,30 @@ function refreshDayOverview(f_timestamp) {
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
 	$('#overview-day-periods').empty();
-	
+
 	var day = getDays(window.internship, f_timestamp);
-	
+
 	// fill day info
 	$('#overview-day-info').text(day[0].info);
-	
+
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
-	
+
 	if(periods.length != 0) {
-	
+
 		for(i = 0; i < periods.length; i++) {
-		
+
 			 pStart = getHumanReadableHours(periods[i].start);
 			 pEnd = getHumanReadableHours(periods[i].end);
-		
-			$('#overview-day-periods').append(
-				'<tr id="overview-day-' + i + '">' +
-					'<td class="form-inline">' +
-						'<strong>From</strong>&nbsp; ' +
-						'<input class="form-control" id="overview-day-start-' + i + '" placeholder="hh:mm" value="' + pStart + '" type="text" disabled>' +
-					'</td>' +
-					'<td class="form-inline">' +
-						'<strong>to</strong>&nbsp; ' +
-						'<input class="form-control" id="overview-day-end-' + i + '" placeholder="hh:mm" value="' + pEnd + '" type="text" disabled>' +
-					'</td>' +
-					'<td class="text-right">' +
-						'<a href="#" id="overview-day-edit-' + i + '" data-index="' + i + '"><span class="glyphicon glyphicon-pencil"></span></a> ' +
-						'<a href="#" id="overview-day-save-' + i + '" data-index="' + i + '" data-uniqueid="' + periods[i].unique_id + '" class="text-success" style="display:none"><span class="glyphicon glyphicon-ok"></span></a> ' +
-						'<a href="#" id="overview-day-delete-' + i + '" data-index="' + i + '" data-uniqueid="' + periods[i].unique_id + '" class="text-danger" style="display:none"><span class="glyphicon glyphicon-remove"></span></a>' +
-					'</td>' +
-				'</tr>'
-				);
-			
-			$('#overview-day-edit-'+i).on('click', function(e) {
-			
-				var x = $(e.delegateTarget).attr('data-index');
-				
-				// show/hide buttons
-				$('#overview-day-edit-'+x).hide();
-				$('#overview-day-save-'+x).show();
-				$('#overview-day-delete-'+x).show();
-			
-				// enable input fields
-				$('#overview-day-start-'+x).removeAttr('disabled');
-				$('#overview-day-end-'+x).removeAttr('disabled');
-			});
-			
-			$('#overview-day-save-'+i).on('click', function(e) {
-			
-				var x = $(e.delegateTarget).attr('data-index');
-				var id = $(e.delegateTarget).attr('data-uniqueid');
-				
-				// save item
-				var wStart = getTimestampFromHours( window.overviewDay , $('#overview-day-start-'+x).val() );
-				var wEnd = getTimestampFromHours( window.overviewDay , $('#overview-day-end-'+x).val() );
-				
-				createOrUpdateWorkingPeriod(wStart, wEnd, window.internship, null, window.overviewDay, id);
-				
-				// update week overview, if current day is displayed
-				if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
-					refreshWeekOverview();
-				
-				// show/hide buttons
-				$('#overview-day-edit-'+x).show();
-				$('#overview-day-save-'+x).hide();
-				$('#overview-day-delete-'+x).hide();
-				
-				// disable input fields
-				$('#overview-day-start-'+x).attr('disabled','disabled');
-				$('#overview-day-end-'+x).attr('disabled','disabled');
-			});
-			
-			$('#overview-day-delete-'+i).on('click', function(e) {
-			
-				var x = $(e.delegateTarget).attr('data-index');
-				var id = $(e.delegateTarget).attr('data-uniqueid');
-				
-				// delete item
-				deleteWorkingPeriod(id);
-				$('#overview-day-'+x).remove();
-				
-				// show/hide buttons
-				$('#overview-day-edit-'+x).show();
-				$('#overview-day-save-'+x).hide();
-				$('#overview-day-delete-'+x).hide();
-				
-				// disable input fields
-				$('#overview-day-start-'+x).attr('disabled','disabled');
-				$('#overview-day-end-'+x).attr('disabled','disabled');
-			});
+
+			// add work period block to day overview list
+			addWorkingPeriodBlock(periods[i].unique_id, i, pStart, pEnd);
 		}
-	
+
 	// no working periods on this day
 	} else {
 
-		$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');
+		//$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');//TODO remove
 	}
 }
 
@@ -733,4 +769,14 @@ $('#overview-week-button-next').on('click', function(e) {
 	refreshWeekOverview( window.overviewWeek + (1000*3600*24*7) );
 });
 
+
+// add new period to day overview button handler
+$('#overview-day-button-addperiod').on('click', function() {
+
+	var uid = addWorkingPeriodBlock();
+	
+	console.log(uid);
+	
+	$('#overview-day-edit-'+uid).click();
+});
 
