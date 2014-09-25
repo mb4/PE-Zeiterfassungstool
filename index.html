@@ -152,88 +152,92 @@
                 	<br>
                 	
                 	<div class="row overview-week-stat">
-                		<div class="col-xs-6 col-md-4">
+                		<div class="col-xs-4 col-md-4">
                 			<div class="well">
                 				<p>Total</p><h2 id="overview-week-stat-total">&mdash;</h2>
                 			</div>
                 		</div>
-                		<div class="col-xs-6 col-md-4">
+                		<div class="col-xs-4 col-md-4">
                 			<div class="well">
                 				<p>Worked</p><h2 id="overview-week-stat-worked" class="text-success">&mdash;</h2>
                 			</div>
                 		</div>
-                		<div class="col-xs-6 col-md-4">
+                		<div class="col-xs-4 col-md-4">
                 			<div class="well">
                 				<p>Due</p><h2 id="overview-week-stat-due" class="text-danger">&mdash;</h2>
                 			</div>
                 		</div>
                 	</div>
                 </div>
-                <div class="col-xs-12 col-md-3">
-                	<h2>Day overview <small id="overview-day-date">&mdash;</small></h2>
-                	<table class="table" id="overview-day-periods"></table>
-                </div>
-                <div class="col-xs-12 col-md-3">
-	                <div class="well">
+                <div class="col-xs-12 col-md-6">
+                	<div class="row">
+		                <div class="col-xs-6 col-md-6">
+		                	<h2>Day overview <small id="overview-day-date">&mdash;</small></h2>
+		                	<table class="table" id="overview-day-periods"></table>
+		                </div>
+		                <div class="col-xs-6 col-md-6">
+			                <div class="well">
 	
-						<h3><span id="overview-internship-name">Internship</span> <button class="btn btn-xs btn-default" id="change-internship-button">change</button></h3>
-						
-						<hr>
-						
-						<div class="row">
-	                		<div class="col-xs-12 col-md-6">
-								<h4>Start Date</h4>
-								<p id="overview-internship-start">&mdash;</p>
-							</div>
-							<div class="col-xs-12 col-md-6">
-								<h4>End Date</h4>
-								<p id="overview-internship-end">&mdash;</p>
-							</div>
-						</div>
-						
-						<hr>
-						<h4>Free days</h4>
-						<table class="table">
-							<tbody id="overview-internship-freedays">
-								<tr>
-									<td>Vacation</td>
-									<td>12.04.2014</td>
-									<td>15.08.2014</td>
-								</tr><tr>
-									<td>Holiday</td>
-									<td>12.04.2014</td>
-									<td>15.08.2014</td>
-								</tr><tr>
-									<td>Vacation</td>
-									<td>12.04.2014</td>
-									<td>15.08.2014</td>
-								</tr><tr>
-									<td>Holiday</td>
-									<td>12.04.2014</td>
-									<td>15.08.2014</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<hr>
-						<h4>Statistics</h4>
-						<dl class="dl-horizontal">
-							<dt>Total</dt>
-							<dd id="overview-internship-stat-total"></dd>
-							<dt>Worked</dt>
-							<dd id="overview-internship-stat-worked" class="text-success"></dd>
-							<dt>Due</dt>
-							<dd id="overview-internship-stat-due" class="text-danger"></dd>
-						</dl>
-						
-						<hr>
-						<button class="btn btn-primary" id="edit-internship-button">
-							Edit
-						</button> 
-						<button class="btn btn-default" id="create-internship-button">
-							Create new internship
-						</button>
-	
+								<h3><span id="overview-internship-name">Internship</span> <button class="btn btn-xs btn-default" id="change-internship-button">change</button></h3>
+								
+								<hr>
+								
+								<div class="row">
+			                		<div class="col-xs-12 col-md-6">
+										<h4>Start Date</h4>
+										<p id="overview-internship-start">&mdash;</p>
+									</div>
+									<div class="col-xs-12 col-md-6">
+										<h4>End Date</h4>
+										<p id="overview-internship-end">&mdash;</p>
+									</div>
+								</div>
+								
+								<hr>
+								<h4>Free days</h4>
+								<table class="table">
+									<tbody id="overview-internship-freedays">
+										<tr>
+											<td>Vacation</td>
+											<td>12.04.2014</td>
+											<td>15.08.2014</td>
+										</tr><tr>
+											<td>Holiday</td>
+											<td>12.04.2014</td>
+											<td>15.08.2014</td>
+										</tr><tr>
+											<td>Vacation</td>
+											<td>12.04.2014</td>
+											<td>15.08.2014</td>
+										</tr><tr>
+											<td>Holiday</td>
+											<td>12.04.2014</td>
+											<td>15.08.2014</td>
+										</tr>
+									</tbody>
+								</table>
+								
+								<hr>
+								<h4>Statistics</h4>
+								<dl class="dl-horizontal">
+									<dt>Total</dt>
+									<dd id="overview-internship-stat-total"></dd>
+									<dt>Worked</dt>
+									<dd id="overview-internship-stat-worked" class="text-success"></dd>
+									<dt>Due</dt>
+									<dd id="overview-internship-stat-due" class="text-danger"></dd>
+								</dl>
+								
+								<hr>
+								<button class="btn btn-primary" id="edit-internship-button">
+									Edit
+								</button> 
+								<button class="btn btn-default" id="create-internship-button">
+									Create new internship
+								</button>
+			
+			                </div>
+		                </div>
 	                </div>
                 </div>
             </div>
@@ -321,12 +325,38 @@
 		    </div>
 		  </div>
 		</div>
+		<!-- Modal internships -->
+		<div class="modal" id="modal-internships" tabindex="-1" role="dialog">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title">All internships</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<table class="table">
+		      		<thead>
+		      			<tr>
+		      				<th>Title</th>
+		      				<th>Start</th>
+		      				<th>End</th>
+		      				<th></th>
+		      			</tr>
+		      		</thead>
+		      		<tbody id="modal-internships-table"></tbody>
+		      	</table>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
 		<!-- Modal settings -->
 		<div class="modal" id="form-settings" tabindex="-1" role="dialog">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <h4 class="modal-title" id="form-internship-title">Settings</h4>
+		        <h4 class="modal-title">Settings</h4>
 		      </div>
 		      <div class="modal-body">
 		      	<h4>Delete / reset database</h4>

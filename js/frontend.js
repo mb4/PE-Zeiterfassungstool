@@ -423,7 +423,33 @@ $('#create-internship-button').on('click', function() {
 // change internship button handler
 $('#change-internship-button').on('click', function() {
 
-	alert('Nothing happens.');
+	$('#modal-internships-table').empty();
+	
+	var all = getInternships();
+	
+	for(i = 0; i < all.length; i++) {
+	
+		$('#modal-internships-table').append(
+			'<tr><td>' + all[i].name + '</td>' +
+				'<td>' + getHumanReadableDate( all[i].start ) + '</td>' +
+				'<td>' + getHumanReadableDate( all[i].end ) + '</td>' +
+				'<td class="text-right"><button id="modal-internships-table-' + i + '" data-uniqueid="' + all[i].unique_id + '" class="btn btn-default btn-xs">select</button></td>' +
+			'</tr>');
+			
+		// event handler for select button
+		$('#modal-internships-table-'+i).on('click', function(e) {
+		
+			window.internship = $(e.target).attr('data-uniqueid');
+			
+			refreshInternshipOverview();
+			refreshWeekOverview();
+			refreshDayOverview();
+			
+			$('#modal-internships').modal('hide');
+		});
+	}
+
+	$('#modal-internships').modal();
 });
 
 
@@ -453,7 +479,7 @@ $('#form-internship-save').on('click', function() {
 		// check if endDate comes after startDate
 		if( startDate > endDate ) {
 
-			alert('The end date must be later than the start date.');//TODO better alert?
+			alert('The end date must be set after the start date.');//TODO better alert?
 
 		// no errors, save data
 		} else {
