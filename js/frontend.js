@@ -69,9 +69,32 @@ function getHumanReadableHoursFromDecimal(f_decimal) {
 	var humanHours = (''+f_decimal).split('.');
 	
 	var returnHours = humanHours[0];
-	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed() + '';
+	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed();
 	
-	return returnHours + ':' + ((returnMinutes.length == 1) ? '0'+returnMinutes : returnMinutes);
+	// if round error (60 minutes), adjust values
+	if(returnMinutes == 60) {
+		
+		returnHours++;
+		returnMinutes = 0;
+	}
+	
+	return returnHours + ':' + (((''+returnMinutes).length == 1) ? '0'+returnMinutes : returnMinutes);
+}
+
+
+/**
+ * Return timestamp from given hours in human-readable format and day-representing timestamp
+ * 
+ * @returns {timestamp/int} timestamp
+ */
+function getTimestampFromHours(f_timestamp, f_hours) {
+	
+	var sp = f_hours.split(':');
+	var date = new Date( getMidnightTimestamp(f_timestamp) );
+	date.setHours( parseInt(sp[0]) );
+	date.setMinutes( parseInt(sp[1]) );
+	
+	return date.getTime();
 }
 
 
@@ -104,9 +127,9 @@ function refreshInternshipOverview(f_internship_id) {
 		//TODO
 		
 		// fill statistics
-		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) );
-		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) );
-		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) );
+		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) +' h' );
+		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) +' h' );
+		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) +' h' );
 	}
 }
 
@@ -139,8 +162,7 @@ function refreshWeekOverview(f_timestamp) {
 			currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
 			
 			// set type of day
-			$('#overview-week select.overview-week-' + i).removeAttr('disabled');//.find('option').removeAttr('selected');
-			//$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');//TODO
+			$('#overview-week select.overview-week-' + i).removeAttr('disabled');
 			$('#overview-week select.overview-week-'+i).val( currentDay[0].type );
 			
 			// save timestamp on select element and weekday table element for direct access
@@ -173,8 +195,7 @@ function refreshWeekOverview(f_timestamp) {
 			// clickable column to select day overview
 			$('#overview-week tbody td.overview-week-'+i).on('click', function(e) {
 			
-				console.log( $(e.target).attr('class'), $(e.target).attr('data-timestamp') );
-				refreshDayOverview( $(e.target).attr('data-timestamp') );
+				refreshDayOverview( $(e.delegateTarget).attr('data-timestamp') );
 			});
 			
 			// output periods
@@ -199,9 +220,118 @@ function refreshWeekOverview(f_timestamp) {
 	}
 	
 	// week statistics
-	$('#overview-week-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
-	$('#overview-week-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
-	$('#overview-week-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) +' h' );
+	$('#overview-week-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) +' h' );
+	$('#overview-week-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) +' h' );
+}
+
+
+/**
+ * add a working period block to day overview
+ *
+ * @param {string} id unique_id of displayed entry. If new period, set null / don't set
+ * @param {int} i counter for element ids
+ * @param {timestamp} start starttime of period
+ * @param {timestamp} end endtime of period
+ *
+ * @returns {int} i element counter of current working period block
+ */
+function addWorkingPeriodBlock(id, i, start, end) {
+
+	id = id || null;
+	i = i || $('#overview-day-periods tr').length;
+	start = start || getHumanReadableHours( window.overviewDay );
+	end = end || getHumanReadableHours( window.overviewDay + 3600*1000 );
+	
+	// create a new entry
+	if(id == null) {
+		id = createOrUpdateWorkingPeriod( getTimestampFromHours(window.overviewDay, start), getTimestampFromHours(window.overviewDay, end), window.internship);
+		console.log(id);
+	}
+
+	$('#overview-day-periods').append(
+				'<tr id="overview-day-' + i + '">' +
+					'<td class="form-inline">' +
+						'<strong>From</strong>&nbsp; ' +
+						'<input class="form-control" id="overview-day-start-' + i + '" placeholder="hh:mm" value="' + start + '" type="text" disabled>' +
+					'</td>' +
+					'<td class="form-inline">' +
+						'<strong>to</strong>&nbsp; ' +
+						'<input class="form-control" id="overview-day-end-' + i + '" placeholder="hh:mm" value="' + end + '" type="text" disabled>' +
+					'</td>' +
+					'<td class="text-right">' +
+						'<a href="#" id="overview-day-edit-' + i + '" data-index="' + i + '"><span class="glyphicon glyphicon-pencil"></span></a> ' +
+						'<a href="#" id="overview-day-save-' + i + '" data-index="' + i + '" data-uniqueid="' + id + '" class="text-success" style="display:none"><span class="glyphicon glyphicon-ok"></span></a> ' +
+						'<a href="#" id="overview-day-delete-' + i + '" data-index="' + i + '" data-uniqueid="' + id + '" class="text-danger" style="display:none"><span class="glyphicon glyphicon-remove"></span></a>' +
+					'</td>' +
+				'</tr>'
+			);
+			
+	$('#overview-day-edit-'+i).on('click', function(e) {
+	
+		var x = $(e.delegateTarget).attr('data-index');
+		
+		// show/hide buttons
+		$('#overview-day-edit-'+x).hide();
+		$('#overview-day-save-'+x).show();
+		$('#overview-day-delete-'+x).show();
+	
+		// enable input fields
+		$('#overview-day-start-'+x).removeAttr('disabled');
+		$('#overview-day-end-'+x).removeAttr('disabled');
+	});
+	
+	$('#overview-day-save-'+i).on('click', function(e) {
+	
+		var x = $(e.delegateTarget).attr('data-index');
+		var id = $(e.delegateTarget).attr('data-uniqueid');
+		
+		// save item
+		var wStart = getTimestampFromHours( window.overviewDay , $('#overview-day-start-'+x).val() );
+		var wEnd = getTimestampFromHours( window.overviewDay , $('#overview-day-end-'+x).val() );
+		
+		createOrUpdateWorkingPeriod(wStart, wEnd, window.internship, null, window.overviewDay, id);
+		
+		// update week overview, if current day is displayed
+		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
+			refreshWeekOverview();
+		
+		// show/hide buttons
+		$('#overview-day-edit-'+x).show();
+		$('#overview-day-save-'+x).hide();
+		$('#overview-day-delete-'+x).hide();
+		
+		// disable input fields
+		$('#overview-day-start-'+x).attr('disabled','disabled');
+		$('#overview-day-end-'+x).attr('disabled','disabled');
+	});
+	
+	$('#overview-day-delete-'+i).on('click', function(e) {
+	
+		var x = $(e.delegateTarget).attr('data-index');
+		var id = $(e.delegateTarget).attr('data-uniqueid');
+		
+		// delete item
+		deleteWorkingPeriod(id);
+		
+		// do not completely remove from list so id count is still correct, just hide from user
+		$('#overview-day-'+x).hide();
+		
+		// update week overview, if current day is displayed
+		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
+			refreshWeekOverview();
+		
+		// show/hide buttons
+		$('#overview-day-edit-'+x).show();
+		$('#overview-day-save-'+x).hide();
+		$('#overview-day-delete-'+x).hide();
+		
+		// disable input fields
+		$('#overview-day-start-'+x).attr('disabled','disabled');
+		$('#overview-day-end-'+x).attr('disabled','disabled');
+	});
+	
+	return i;
 }
 
 
@@ -212,30 +342,38 @@ function refreshWeekOverview(f_timestamp) {
  */
 function refreshDayOverview(f_timestamp) {
 
+	//TODO add button for creating new working periods
+	//TODO add day statistics
+
 	f_timestamp = getMidnightTimestamp( parseInt(f_timestamp) ) || window.overviewDay;
 	window.overviewDay = f_timestamp;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
 	$('#overview-day-periods').empty();
-	
+
+	var day = getDays(window.internship, f_timestamp);
+
+	// fill day info
+	$('#overview-day-info').text(day[0].info);
+
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
-	
+
 	if(periods.length != 0) {
-	
+
 		for(i = 0; i < periods.length; i++) {
-		
+
 			 pStart = getHumanReadableHours(periods[i].start);
 			 pEnd = getHumanReadableHours(periods[i].end);
-		
-			$('#overview-day-periods').append('<tr><td>' + pStart + '</td><td>' + pEnd + '</td><td class="text-right"><a href="#" id="overview-day-edit-' + periods + '"><span class="glyphicon glyphicon-pencil"></span></a></td></tr>');
-			//TODO edit handler
+
+			// add work period block to day overview list
+			addWorkingPeriodBlock(periods[i].unique_id, i, pStart, pEnd);
 		}
-	
+
 	// no working periods on this day
 	} else {
-	
-		$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');
+
+		//$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');//TODO remove
 	}
 }
 
@@ -390,8 +528,7 @@ $('#edit-internship-button').on('click', function() {
 
 	// fill form with internship data
 	
-	//var internship_data = db.query('internship', {unique_id: window.internship}); //ToDo: remove!!!
-        var internship_data = getInternships(window.internship);
+    var internship_data = getInternships(window.internship);
 	
 	if(internship_data.length != 0) {
 		
@@ -553,6 +690,8 @@ $('#form-internship-save').on('click', function() {
 			}
 			
 			$('#form-internship').modal('hide');
+			
+			//TODO save current tracking if view changes because of new entry
 		}
 	}
 });
@@ -663,4 +802,14 @@ $('#overview-week-button-next').on('click', function(e) {
 	refreshWeekOverview( window.overviewWeek + (1000*3600*24*7) );
 });
 
+
+// add new period to day overview button handler
+$('#overview-day-button-addperiod').on('click', function() {
+
+	var uid = addWorkingPeriodBlock();
+	
+	console.log(uid);
+	
+	$('#overview-day-edit-'+uid).click();
+});
 

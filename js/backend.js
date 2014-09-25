@@ -6,7 +6,7 @@
  * 										   *
  * * * * * * * * * * * * * * * * * * * * * */
 
-
+ 
 
 /////////////////////////////////////////////
 // GLOBAL VARIABLES                        //
@@ -228,6 +228,8 @@ function createOrUpdateWorkingPeriod(f_start, f_end, f_internship_id, f_info, f_
     });
     
     db.commit();
+    
+    return f_unique_id;
 }
 
 	
@@ -395,8 +397,11 @@ function getWorkingPeriods(f_internship_id, f_start, f_end)
     f_end = getMidnightTimestamp(f_end);
     
     //query all working periods in specified time frame
-    var working_periods = db.query('working_period', function(row){
-        return (row.internship_id == f_internship_id && (f_start <= row.day_timestamp && row.day_timestamp <= f_end)) ? true : false
+    var working_periods = db.queryAll('working_period', {
+    	query: function(row){
+        	return (row.internship_id == f_internship_id && (f_start <= row.day_timestamp && row.day_timestamp <= f_end)) ? true : false
+    		},
+    	sort: [['start', 'ASC']]
     });
     
     return working_periods;

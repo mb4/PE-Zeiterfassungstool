@@ -52,6 +52,27 @@ button {
 
 
 
+/**
+ * day overview styles
+ */
+
+#overview-day-info {
+	width: auto;
+}
+#overview-day-periods input {
+	width: 60px;
+}
+#overview-day-periods input[disabled],
+#overview-day-info[disabled] {
+	height: auto;
+	margin: 0;
+	padding: 0 0.5em;
+	border: 0 none;
+	box-shadow: none;
+	cursor:default;
+	background-color: transparent;
+}
+
 
 /**
  * weekly overview styles
