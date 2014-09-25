@@ -55,6 +55,8 @@ function refreshWeekOverview(f_timestamp) {
 		currentTimestamp = f_timestamp + i * 1000*3600*24;
 		currentDay = getDays(window.internship, currentTimestamp);
 		
+		$('#overview-week tbody td.overview-week-'+i).empty();
+		
 		// check if data is available for this day
 		if(currentDay.length != 0) {
 		
@@ -77,8 +79,6 @@ function refreshWeekOverview(f_timestamp) {
 			}).change();
 			
 			// TODO clickable column to select day
-			
-			$('#overview-week tbody td.overview-week-'+i).empty();
 			
 			// output periods
 			for(j = 0; j < currentPeriods.length; j++) {
@@ -127,6 +127,11 @@ function refreshDayOverview(f_timestamp) {
 
 function init() {
 
+	window.overviewDay = getMidnightTimestamp( Date.now() );
+	window.overviewWeek = getWeekTimestamp( Date.now() );
+	refreshWeekOverview();
+	refreshDayOverview();
+
 	// set initial internship id to newest internship
 	newestInternship = db.queryAll('internship', {
 							sort: [['start', 'DESC']],
@@ -137,13 +142,7 @@ function init() {
 	if(newestInternship.length != 0) {
 	
 		window.internship = newestInternship[0].unique_id;
-		
-		window.overviewDay = getMidnightTimestamp( Date.now() );
-		window.overviewWeek = getWeekTimestamp( Date.now() );
-		
 		refreshInternshipOverview();
-		refreshWeekOverview();
-		refreshDayOverview();
 	
 	// no internship available, show welcome modal
 	} else {
@@ -269,6 +268,8 @@ $('#form-internship-save').on('click', function() {
 				// if the edited internship is currently displayed, update view
 				if(i_id == window.internship) {
 					refreshInternshipOverview();
+					refreshWeekOverview();
+					refreshDayOverview();
 				}
 
 			// create new entry
@@ -278,6 +279,8 @@ $('#form-internship-save').on('click', function() {
 				
 				refreshInternshipOverview(update_id);
 				window.internship = update_id;
+				refreshWeekOverview();
+				refreshDayOverview();
 			}
 			
 			$('#form-internship').modal('hide');
