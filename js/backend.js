@@ -421,8 +421,8 @@ function getWorkingPeriods(f_internship_id, f_start, f_end)
     f_end = getMidnightTimestamp(f_end);
     
     //query all working periods in specified time frame
-    var working_periods = db.query("working_period", function(row){
-        row.internship_id == f_internship_id && (f_start <= row.day_timestamp && row.day_timestamp <= f_end) ? true : false
+    var working_periods = db.query('working_period', function(row){
+        return (row.internship_id == f_internship_id && (f_start <= row.day_timestamp && row.day_timestamp <= f_end)) ? true : false
     });
     
     return working_periods;
@@ -447,7 +447,7 @@ function getDays(f_internship_id, f_start, f_end)
     
     //query all days in specified time frame
     var days = db.query("day", function(row){
-       row.internship_id == f_internship_id && (f_start <= row.timestamp && row.timestamp <= f_end) ? true : false
+      return (row.internship_id == f_internship_id && (f_start <= row.timestamp && row.timestamp <= f_end)) ? true : false
     });
     
     return days;
