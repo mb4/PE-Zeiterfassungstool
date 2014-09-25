@@ -404,6 +404,7 @@ $('#edit-internship-button').on('click', function() {
 	}
 });
 
+
 // create internship button handler
 $('#create-internship-button').on('click', function() {
 
@@ -420,7 +421,7 @@ $('#create-internship-button').on('click', function() {
 });
 
 
-// change internship button handler
+// change displayed internship button handler
 $('#change-internship-button').on('click', function() {
 
 	$('#modal-internships-table').empty();
@@ -438,6 +439,12 @@ $('#change-internship-button').on('click', function() {
 			
 		// event handler for select button
 		$('#modal-internships-table-'+i).on('click', function(e) {
+		
+			// save current tracking to formerly selected internship before switching
+			if(window.trackingStart != 0) {
+			
+				$('#tracking-button').click();
+			}
 		
 			window.internship = $(e.target).attr('data-uniqueid');
 			

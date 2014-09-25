@@ -87,6 +87,9 @@ button {
 	position: relative;
 	cursor: pointer;
 }
+#overview-week tbody td:first-child {
+	cursor: default;
+}
 #overview-week tbody td .working-period {
 	position: absolute;
 	left: 0 !important;
