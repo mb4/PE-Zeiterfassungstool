@@ -53,27 +53,53 @@ function refreshWeekOverview(f_timestamp) {
 	for(i = 0; i <= 6; i++) {
 
 		currentTimestamp = f_timestamp + i * 1000*3600*24;
-		currentDay = db.query('day', {internship_id: window.internship, timestamp: currentTimestamp});
-		currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
-		
-		// set type of day
-		
+		currentDay = getDays(window.internship, currentTimestamp);
 		
 		$('#overview-week tbody td.overview-week-'+i).empty();
 		
-		// output periods
-		for(j = 0; j < currentPeriods.length; j++) {
+		// check if data is available for this day
+		if(currentDay.length != 0) {
+		
+			currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
 			
-			pStart = new Date( currentPeriods[j].start );
-			pEnd = new Date( currentPeriods[j].end );
-			pOffset = ((pStart.getHours()/24 + pStart.getMinutes()/(24*60) + pStart.getSeconds()/(24*3600) + pStart.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
-			pOffsetEnd = ((pEnd.getHours()/24 + pEnd.getMinutes()/(24*60) + pEnd.getSeconds()/(24*3600) + pEnd.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
-			pHeight = (pOffsetEnd - pOffset < 2) ? 2 : pOffsetEnd - pOffset;
+			// set type of day
+			$('#overview-week select.overview-week-' + i).removeAttr('disabled').find('option').removeAttr('selected');
+			$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');
 			
-			$('#overview-week tbody td.overview-week-'+i).append('<div class="working-period" style="top:' + pOffset + '%;height:' + pHeight + '%;">&nbsp;</div>');
+			// overview week day type select handler
+			$('#overview-week select.overview-week-'+i).on('change', function(e) {
+				
+				var dayClasses = 'day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation';
+				
+				// get class of column to apply styling
+				var columnClass = $(e.target).removeClass(dayClasses).attr('class');
+				var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
+				
+				$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
+			}).change();
+			
+			// TODO clickable column to select day
+			
+			// output periods
+			for(j = 0; j < currentPeriods.length; j++) {
+				
+				pStart = new Date( currentPeriods[j].start );
+				pEnd = new Date( currentPeriods[j].end );
+				pOffset = ((pStart.getHours()/24 + pStart.getMinutes()/(24*60) + pStart.getSeconds()/(24*3600) + pStart.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
+				pOffsetEnd = ((pEnd.getHours()/24 + pEnd.getMinutes()/(24*60) + pEnd.getSeconds()/(24*3600) + pEnd.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
+				pHeight = (pOffsetEnd - pOffset < 2) ? 2 : pOffsetEnd - pOffset;
+				
+				$('#overview-week tbody td.overview-week-'+i).append('<div class="working-period" style="top:' + pOffset + '%;height:' + pHeight + '%;">&nbsp;</div>');
+			}
+
+		// no data for current day
+		} else {
+		
+			$('#overview-week select.overview-week-'+i).attr('disabled', 'disabled');
+			
+			$('#overview-week .overview-week-'+i).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation');
 		}
 	}
-	//TODO
 }
 
 
@@ -101,6 +127,11 @@ function refreshDayOverview(f_timestamp) {
 
 function init() {
 
+	window.overviewDay = getMidnightTimestamp( Date.now() );
+	window.overviewWeek = getWeekTimestamp( Date.now() );
+	refreshWeekOverview();
+	refreshDayOverview();
+
 	// set initial internship id to newest internship
 	newestInternship = db.queryAll('internship', {
 							sort: [['start', 'DESC']],
@@ -111,13 +142,7 @@ function init() {
 	if(newestInternship.length != 0) {
 	
 		window.internship = newestInternship[0].unique_id;
-		
-		window.overviewDay = getMidnightTimestamp( Date.now() );
-		window.overviewWeek = getWeekTimestamp( Date.now() );
-		
 		refreshInternshipOverview();
-		refreshWeekOverview();
-		refreshDayOverview();
 	
 	// no internship available, show welcome modal
 	} else {
@@ -243,6 +268,8 @@ $('#form-internship-save').on('click', function() {
 				// if the edited internship is currently displayed, update view
 				if(i_id == window.internship) {
 					refreshInternshipOverview();
+					refreshWeekOverview();
+					refreshDayOverview();
 				}
 
 			// create new entry
@@ -252,6 +279,8 @@ $('#form-internship-save').on('click', function() {
 				
 				refreshInternshipOverview(update_id);
 				window.internship = update_id;
+				refreshWeekOverview();
+				refreshDayOverview();
 			}
 			
 			$('#form-internship').modal('hide');
@@ -317,13 +346,23 @@ $('#tracking-button').on('click', function(e) {
 		$('#tracking-time').runner('stop');
 
 		// save to working_period
-		createOrUpdateWorkingPeriod(window.trackingStart, Date.now(), window.internship);
+		var dateNow = Date.now();
+		createOrUpdateWorkingPeriod(window.trackingStart, dateNow, window.internship);
 
 		// add working period to day overview (if displayed day there is current day)
 		if( getMidnightTimestamp( Date.now() ) == window.overviewDay) {
 
-		//TODO add to day overview
-		}		
+			refreshDayOverview();
+		}
+		
+		// refresh week overview if current day is displayed
+		if( getWeekTimestamp( Date.now() ) == window.overviewWeek ) {
+		
+			refreshWeekOverview();
+		}
+		
+		// reset trackingStart
+		window.trackingStart = 0;
 	}
 });
 
@@ -342,18 +381,5 @@ $('#overview-week-button-next').on('click', function(e) {
 	window.overviewWeek = window.overviewWeek + (1000*3600*24*7);
 	refreshWeekOverview();
 });
-
-
-// overview week day type handlers
-$('#overview-week select').on('change', function(e) {
-	
-	var dayClasses = 'day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation';
-	
-	// get class of column to apply styling
-	var columnClass = $(e.target).removeClass(dayClasses).attr('class');
-	var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
-	
-	$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
-}).change();
 
 
