@@ -400,18 +400,57 @@ function deleteInternship(f_internship_id)
 function deleteWorkingPeriod(f_unique_id)
 {
     db.deleteRows("working_period", {unique_id:f_unique_id});
+    db.commit();
 }
 
 /**
- * returns all working periods of a day within an internship
+ * returns all working periods for a specified internship and time frame
  * 
  * @param {uid/string} f_internship_id
- * @param {timestamp/int} f_day_timestamp
+ * @param {timestamp/int} f_start
+ * @param {timestamp/int} f_end (optional)
  * @returns {array consisting of objects} working_periods
  */
-function getWorkingPeriods(f_internship_id, f_day_timestamp)
+function getWorkingPeriods(f_internship_id, f_start, f_end)
 {
-    return db.query("working_period", {internship_id:f_internship_id, timestamp:f_day_timestamp});    
+    //if end is not specified working periods for the start day will be returned
+    f_end = f_end || f_start;
+    
+    //get midnight timestamp for start + end day
+    f_start = getMidnightTimestamp(f_start);
+    f_end = getMidnightTimestamp(f_end);
+    
+    //query all working periods in specified time frame
+    var working_periods = db.query("working_period", function(row){
+        row.internship_id == f_internship_id && (f_start <= row.day_timestamp && row.day_timestamp <= f_end) ? true : false
+    });
+    
+    return working_periods;
+}
+
+/**
+ * returns all days for a specified internship and time frame
+ * 
+ * @param {uid/string} f_internship_id
+ * @param {timestamp/int} f_start
+ * @param {timestamp/int} f_end (optional)
+ * @returns {array consisting of objects} days
+ */
+function getDays(f_internship_id, f_start, f_end)
+{
+    //if end is not specified only the start day will be returned
+    f_end = f_end || f_start;
+    
+    //get midnight timestamp for start + end day
+    f_start = getMidnightTimestamp(f_start);
+    f_end = getMidnightTimestamp(f_end);
+    
+    //query all days in specified time frame
+    var days = db.query("day", function(row){
+       row.internship_id == f_internship_id && (f_start <= row.timestamp && row.timestamp <= f_end) ? true : false
+    });
+    
+    return days;
 }
 
 //ToDO: remove
