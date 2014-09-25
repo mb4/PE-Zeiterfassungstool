@@ -63,8 +63,12 @@ function refreshWeekOverview(f_timestamp) {
 			currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
 			
 			// set type of day
-			$('#overview-week select.overview-week-' + i).removeAttr('disabled').find('option').removeAttr('selected');
-			$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');
+			$('#overview-week select.overview-week-' + i).removeAttr('disabled');//.find('option').removeAttr('selected');
+			//$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');//TODO
+			$('#overview-week select.overview-week-'+i).val( currentDay[0].type );
+			
+			// save timestamp on select element for direct access
+			$('#overview-week select.overview-week-'+i).attr('data-timestamp', currentDay[0].timestamp);
 			
 			// overview week day type select handler
 			$('#overview-week select.overview-week-'+i).on('change', function(e) {
@@ -74,6 +78,17 @@ function refreshWeekOverview(f_timestamp) {
 				// get class of column to apply styling
 				var columnClass = $(e.target).removeClass(dayClasses).attr('class');
 				var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
+				
+				// update in database
+				db.update('day', {
+						internship_id: window.internship,
+						timestamp: $(e.target).attr('data-timestamp')
+					},
+					function(row) {
+						row.type = $(e.target).val();
+						return row;
+					}); //TODO auslagern
+				db.commit();
 				
 				$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
 			}).change();
@@ -94,12 +109,17 @@ function refreshWeekOverview(f_timestamp) {
 
 		// no data for current day
 		} else {
-		
+
 			$('#overview-week select.overview-week-'+i).attr('disabled', 'disabled');
 			
 			$('#overview-week .overview-week-'+i).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation');
 		}
 	}
+	
+	// week statistics
+	$('#overview-week-stat-total').text('Test');
+	$('#overview-week-stat-worked').text('Test');
+	$('#overview-week-stat-due').text('Test');
 }
 
 
@@ -129,8 +149,6 @@ function init() {
 
 	window.overviewDay = getMidnightTimestamp( Date.now() );
 	window.overviewWeek = getWeekTimestamp( Date.now() );
-	refreshWeekOverview();
-	refreshDayOverview();
 
 	// set initial internship id to newest internship
 	newestInternship = db.queryAll('internship', {
@@ -143,6 +161,8 @@ function init() {
 	
 		window.internship = newestInternship[0].unique_id;
 		refreshInternshipOverview();
+		refreshWeekOverview();
+		refreshDayOverview();
 	
 	// no internship available, show welcome modal
 	} else {
