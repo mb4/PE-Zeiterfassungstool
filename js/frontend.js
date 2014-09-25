@@ -256,35 +256,42 @@ function getDynblock(f_id, f_type, f_info, f_start, f_end)
     typeof(f_start) == "number" ? f_start=getHumanReadableDate(f_start) : f_start = "";
     typeof(f_end) == "number" ? f_start=getHumanReadableDate(f_end) : f_end = "";
     
+    //define first column depending on dynblock type
+    var column1_description = f_type == "Vacation" ? "Start date" : "Date";
+    
     //define second column depending on dynblock type
     var column2_description = f_type == "Vacation" ? "End date" : "Info";
-    var column2_content = f_type == "Vacation" ? f_end : f_info;
-    var column2_placeholder = f_type == "Vacation" ? "DD.MM.YYYY" : "e.g. Christmas";
-    var column2_additional_attr = f_type == "Vacation" ? 'data-date="" data-date-format="dd.mm.yyyy"' : '';
+
     
-    return '<div id="form-internship-dynblock-'+f_id+'" class="row">\n'
-                +'<div class="col-xs-12 col-md-2">\n'
-                    +'<strong id="form-internship-dynblock-type-'+f_id+'">'+f_type+'</strong>\n'
-                    +'</div>\n'
-                    +'<div class="col-xs-12 col-md-5">\n'
-                        +'<div class="form-group">\n'
-                            +'<label for="form-internship-dynblock-col1-'+f_id+'">Start date</label>\n'
-                            +'<div class="input-group">\n'
-                                +'<input type="text" id="form-internship-dynblock-col1-'+f_id+'" class="form-control" data-date="" data-date-format="dd.mm.yyyy" value="'+f_start+'" placeholder="DD.MM.YYYY">\n'
-                                +'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\n'
-                            +'</div>\n'
-                        +'</div>\n'
-                    +'</div>\n'
-                    +'<div class="col-xs-12 col-md-5">\n'
-                        +'<div class="form-group">\n'
-                        +'<label for="form-internship-dynblock-col2-'+f_id+'">'+column2_description+'</label>\n'
-                            +'<div class="input-group">\n'
-                                +'<input type="text" id="form-internship-dynblock-col2-'+f_id+'" class="form-control" '+column2_additional_attr+' value="'+column2_content+'" placeholder="'+column2_placeholder+'">\n'
-                                +'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\n'
-                            +'</div>\n'
+    var column2 = f_type == "Vacation" ?
+    	'<div class="input-group">'
+			+'<input type="text" id="form-internship-dynblock-col2-'+f_id+'" class="form-control input-sm" data-date="'+f_end+'" data-date-format="dd.mm.yyyy" value="'+f_end+'" placeholder="DD.MM.YYYY">'
+			+'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>'
+		+'</div>'
+		:
+		'<input type="text" id="form-internship-dynblock-col2-'+f_id+'" class="form-control input-sm" value="'+f_info+'" placeholder="e.g. Christmas">';
+    
+    return '<div id="form-internship-dynblock-'+f_id+'" class="row">'
+    			+'<div class="col-xs-6 col-md-3">'
+                    +'<a class="btn btn-danger btn-xs" id="form-internship-dynblock-delete-'+f_id+'">&times;</a>&nbsp;'
+                    +'<strong id="form-internship-dynblock-type-'+f_id+'">'+f_type+'</strong>'
+                +'</div>'
+                +'<div class="col-xs-12 col-md-4">'
+                    +'<div class="form-group">'
+                        +'<label class="small for="form-internship-dynblock-col1-'+f_id+'">' + column1_description + '</label>'
+                        +'<div class="input-group">'
+                            +'<input type="text" id="form-internship-dynblock-col1-'+f_id+'" class="form-control input-sm" data-date="" data-date-format="dd.mm.yyyy" value="'+f_start+'" placeholder="DD.MM.YYYY">\n'
+                            +'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\n'
                         +'</div>\n'
                     +'</div>\n'
                 +'</div>\n'
+                +'<div class="col-xs-12 col-md-5">\n'
+                    +'<div class="form-group">\n'
+                    +'<label class="small" for="form-internship-dynblock-col2-'+f_id+'">'+column2_description+'</label>\n'
+                        + column2
+                    +'</div>\n'
+                +'</div>\n'
+            +'</div>\n'
 }
 
 
