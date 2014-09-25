@@ -136,7 +136,7 @@ function getHolidaysAndVacationPeriods(f_internship_id)
         if(days_total[x].type == "Holiday")
         {
             //push holidays directly to days_and_periods array
-            days_and_periods.push({type:days_total[x].type, start:days_total[x].timestamp, info:days_total[x].info});
+            days_and_periods.push({type:days_total[x].type, start:days_total[x].timestamp, end:days_total[x].timestamp, info:days_total[x].info, days:1});
         }
         else if (days_total[x].type == "Vacation")
         {
@@ -144,12 +144,12 @@ function getHolidaysAndVacationPeriods(f_internship_id)
             if(typeof(vacation) == "object")
             {
                 vacation.end = days_total[x].timestamp;
-                vacation.vacation_days+=1;
+                vacation.days+=1;
             }
             //create vacation object if it doesn't exist
             else
             {
-                var vacation = {type:days_total[x].type, start:days_total[x].timestamp, end:days_total[x].timestamp, vacation_days:1};
+                var vacation = {type:days_total[x].type, start:days_total[x].timestamp, end:days_total[x].timestamp, info:"", days:1};
             }
         }
         else if (days_total[x].type == "Working Day")

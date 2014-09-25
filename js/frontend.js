@@ -136,8 +136,51 @@ function refreshDayOverview(f_timestamp) {
 	//TODO
 }
 
-
-
+/**
+ * returns a dynamic block (dynblock) displaying a vacation period or holiday
+ * 
+ * @param {int} f_id (DOM id)
+ * @param {string} f_type
+ * @param {string} f_info
+ * @param {timestamp} f_start
+ * @param {timestamp} f_end
+ * @returns {html} dynblock
+ */
+function getDynblock(f_id, f_type, f_info, f_start, f_end)
+{
+    f_info = f_info || "";
+    f_start = f_start || "";
+    f_end = f_end || "";
+    
+    //define second column depending on dynblock type
+    var column2_description = f_type == "Vacation" ? "End date" : "Info";
+    var column2_content = f_type == "Vacation" ? getHumanReadableDate(f_end) : f_info;
+    var column2_placeholder = f_type == "Vacation" ? "DD.MM.YYYY" : "e.g. Christmas";
+    
+    return '<div id="form-internship-dynblock-'+f_id+'" class="row">\n'
+                +'<div class="col-xs-12 col-md-2">\n'
+                    +'<strong id="form-internship-dynblock-type-'+f_id+'">'+f_type+'</strong>\n'
+                    +'</div>\n'
+                    +'<div class="col-xs-12 col-md-5">\n'
+                            +'<div class="form-group">\n'
+                                    +'<label for="form-internship-dynblock-col1-'+f_id+'">Start date</label>\n'
+                            +'<div class="input-group">\n'
+                                            +'<input type="text" id="form-internship-dynblock-col1-'+f_id+'" class="form-control" data-date="" data-date-format="dd.mm.yyyy" value="'+getHumanReadableDate(f_start)+'" placeholder="DD.MM.YYYY">\n'
+                                            +'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\n'
+                                    +'</div>\n'
+                            +'</div>\n'
+                    +'</div>\n'
+                    +'<div class="col-xs-12 col-md-5">\n'
+                            +'<div class="form-group">\n'
+                            +'<label for="form-internship-dynblock-col2-'+f_id+'">'+column2_description+'</label>\n'
+                                    +'<div class="input-group">\n'
+                                            +'<input type="text" id="form-internship-dynblock-col2-'+f_id+'" class="form-control" data-date="" data-date-format="dd.mm.yyyy" value="'+column2_content+'" placeholder="'+column2_placeholder+'">\n'
+                                            +'<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\n'
+                                    +'</div>\n'
+                            +'</div>\n'
+                    +'</div>\n'
+            +'</div>\n'
+}
 
 
 /////////////////////////////////////////////
@@ -210,16 +253,29 @@ $('#edit-internship-button').on('click', function() {
 
 	// fill form with internship data
 	
-	var internship_data = db.query('internship', {unique_id: window.internship});
+	//var internship_data = db.query('internship', {unique_id: window.internship}); //ToDo: remove!!!
+        var internship_data = getInternships(window.internship);
 	
 	if(internship_data.length != 0) {
 		
+                $('#form-internship-title').text('Edit internship');
+                
+                //internship details
 		$('#form-internship-name').val( internship_data[0].name );
 		$('#form-internship-start').val( getHumanReadableDate(internship_data[0].start) ).attr('data-date', getHumanReadableDate(internship_data[0].start) );
 		$('#form-internship-end').val( getHumanReadableDate(internship_data[0].end) ).attr('data-date', getHumanReadableDate(internship_data[0].end) );
 		$('#form-internship-id').val( window.internship );
-		
-		$('#form-internship-title').text('Edit internship');
+                
+		//vacation and holiday details
+                $("#dynblock-wrapper").html("");
+                var periods = getHolidaysAndVacationPeriods(window.internship);
+                for (var x=0; x<periods.length; x++)
+                {
+                    //add dynblock and initialize datepickers
+                    $("#dynblock-wrapper").append(getDynblock(x, periods[x].type, periods[x].info, periods[x].start, periods[x].end));
+                    $('#form-internship-dynblock-col1-'+x).datepicker();
+                    if (periods[x].type == "Vacation") $('#form-internship-dynblock-col2-'+x).datepicker();
+                }
 		
 		$('#form-internship-cancel').show();
 		$('#form-internship-delete').show();
@@ -228,7 +284,6 @@ $('#edit-internship-button').on('click', function() {
 		// open modal with form
 		$('#form-internship').modal();
 	} else {
-
 		alert('No entry found for editing with given ID.');//TODO change visualization?
 	}
 });
