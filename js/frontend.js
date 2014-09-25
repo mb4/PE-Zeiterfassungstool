@@ -53,27 +53,53 @@ function refreshWeekOverview(f_timestamp) {
 	for(i = 0; i <= 6; i++) {
 
 		currentTimestamp = f_timestamp + i * 1000*3600*24;
-		currentDay = db.query('day', {internship_id: window.internship, timestamp: currentTimestamp});
-		currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
+		currentDay = getDays(window.internship, currentTimestamp);
 		
-		// set type of day
+		// check if data is available for this day
+		if(currentDay.length != 0) {
 		
-		
-		$('#overview-week tbody td.overview-week-'+i).empty();
-		
-		// output periods
-		for(j = 0; j < currentPeriods.length; j++) {
+			currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
 			
-			pStart = new Date( currentPeriods[j].start );
-			pEnd = new Date( currentPeriods[j].end );
-			pOffset = ((pStart.getHours()/24 + pStart.getMinutes()/(24*60) + pStart.getSeconds()/(24*3600) + pStart.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
-			pOffsetEnd = ((pEnd.getHours()/24 + pEnd.getMinutes()/(24*60) + pEnd.getSeconds()/(24*3600) + pEnd.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
-			pHeight = (pOffsetEnd - pOffset < 2) ? 2 : pOffsetEnd - pOffset;
+			// set type of day
+			$('#overview-week select.overview-week-' + i).removeAttr('disabled').find('option').removeAttr('selected');
+			$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');
 			
-			$('#overview-week tbody td.overview-week-'+i).append('<div class="working-period" style="top:' + pOffset + '%;height:' + pHeight + '%;">&nbsp;</div>');
+			// overview week day type select handler
+			$('#overview-week select.overview-week-'+i).on('change', function(e) {
+				
+				var dayClasses = 'day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation';
+				
+				// get class of column to apply styling
+				var columnClass = $(e.target).removeClass(dayClasses).attr('class');
+				var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
+				
+				$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
+			}).change();
+			
+			// TODO clickable column to select day
+			
+			$('#overview-week tbody td.overview-week-'+i).empty();
+			
+			// output periods
+			for(j = 0; j < currentPeriods.length; j++) {
+				
+				pStart = new Date( currentPeriods[j].start );
+				pEnd = new Date( currentPeriods[j].end );
+				pOffset = ((pStart.getHours()/24 + pStart.getMinutes()/(24*60) + pStart.getSeconds()/(24*3600) + pStart.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
+				pOffsetEnd = ((pEnd.getHours()/24 + pEnd.getMinutes()/(24*60) + pEnd.getSeconds()/(24*3600) + pEnd.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
+				pHeight = (pOffsetEnd - pOffset < 2) ? 2 : pOffsetEnd - pOffset;
+				
+				$('#overview-week tbody td.overview-week-'+i).append('<div class="working-period" style="top:' + pOffset + '%;height:' + pHeight + '%;">&nbsp;</div>');
+			}
+
+		// no data for current day
+		} else {
+		
+			$('#overview-week select.overview-week-'+i).attr('disabled', 'disabled');
+			
+			$('#overview-week .overview-week-'+i).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation');
 		}
 	}
-	//TODO
 }
 
 
@@ -352,18 +378,5 @@ $('#overview-week-button-next').on('click', function(e) {
 	window.overviewWeek = window.overviewWeek + (1000*3600*24*7);
 	refreshWeekOverview();
 });
-
-
-// overview week day type handlers
-$('#overview-week select').on('change', function(e) {
-	
-	var dayClasses = 'day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation';
-	
-	// get class of column to apply styling
-	var columnClass = $(e.target).removeClass(dayClasses).attr('class');
-	var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
-	
-	$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
-}).change();
 
 
