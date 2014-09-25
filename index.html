@@ -24,20 +24,31 @@
     </head>
 
     <body>
-        <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
-            <span class="navbar-brand"><span class="glyphicon glyphicon-time"></span> TimeTrackTool</span>
-            <button type="button" class="btn navbar-btn btn-danger" onclick="db.drop();">
-				<span class="glyphicon glyphicon-remove-sign"></span> <strong>Delete database</strong>
-			</button>
-            
-            <div class="navbar-right">
-            	<span id="tracking-time" class="navbar-text"></span>
-				<button type="button" class="btn navbar-btn btn-success" id="tracking-button">
-					<span class="glyphicon glyphicon-time"></span> <strong>Start tracking</strong>
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+        	<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-content">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
 				</button>
-				&nbsp;
+				<span class="navbar-brand"><span class="glyphicon glyphicon-time"></span> TimeTrackTool</span>
+        	</div>
+
+			<div class="collapse navbar-collapse" id="nav-content">
+				<ul class="nav navbar-nav">
+					<li><a href="#" data-toggle="modal" data-target="#form-settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+				</ul>
+	            
+	            <div class="navbar-right">
+	            	<span id="tracking-time" class="navbar-text"></span>
+					<button type="button" class="btn navbar-btn btn-success" id="tracking-button">
+						<span class="glyphicon glyphicon-time"></span> <strong>Start tracking</strong>
+					</button>
+					&nbsp;
+				</div>
 			</div>
-        </div>
+        </nav>
 
         <div class="container-fluid">
             <div class="row">
@@ -350,19 +361,22 @@
 		    </div>
 		  </div>
 		</div>
-		<!-- Modal welcome -->
-		<div class="modal" id="modal-ie8" tabindex="-1" role="dialog">
+		<!-- Modal settings -->
+		<div class="modal" id="form-settings" tabindex="-1" role="dialog">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <h4 class="modal-title" id="form-internship-title">Welcome</h4>
+		        <h4 class="modal-title" id="form-internship-title">Settings</h4>
 		      </div>
 		      <div class="modal-body">
-				<p>Welcome to TimeTrackTool, your tool for easy tracking of working time.</p>
-				<p>All time tracked is directly recorded for an internship or project.<br>To start, please create an internship first.</p>
+		      	<h4>Delete / reset database</h4>
+		      	<p>You can delete all data tracked and reset the database. Caution! You are not asked to confirm the deletion when clicking the button.</p>
+				<button type="button" class="btn navbar-btn btn-danger" onclick="db.drop();">
+					<span class="glyphicon glyphicon-remove-sign"></span> <strong>Delete database</strong>
+				</button>
 		      </div>
 		      <div class="modal-footer">
-		        <button type="button" class="btn btn-primary" id="welcome-button-close">Create new internship</button>
+		        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 		      </div>
 		    </div>
 		  </div>

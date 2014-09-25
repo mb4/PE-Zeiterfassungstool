@@ -53,7 +53,7 @@ function getHumanReadableHours(f_timestamp) {
 
 	var humanDate = new Date(f_timestamp);
 	
-	return '' + humanDate.getHours() + ':' +
+	return '' + (((humanDate.getHours()+'').length == 1) ? '0' : '') + humanDate.getHours() + ':' +
 			(((humanDate.getMinutes()+'').length == 1) ? '0' : '') + humanDate.getMinutes();
 }
 
@@ -307,6 +307,17 @@ $('#form-internship-end').datepicker();
 /////////////////////////////////////////////
 // EVENT HANDLERS                          //
 /////////////////////////////////////////////
+
+// handler before closing browser tab or window
+$(window).bind('beforeunload', function (e) {
+
+	// if tracking is running
+	if(window.trackingStart != 0) {
+	
+		$('#tracking-button').click();
+	}
+});
+
 
 // edit internship button handler
 $('#edit-internship-button').on('click', function() {
