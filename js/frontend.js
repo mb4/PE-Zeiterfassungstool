@@ -118,7 +118,8 @@ function refreshInternshipOverview(f_internship_id) {
  */
 function refreshWeekOverview(f_timestamp) {
 
-	f_timestamp = parseInt(getWeekTimestamp(f_timestamp)) || parseInt(window.overviewWeek);
+	f_timestamp = getWeekTimestamp( parseInt(f_timestamp) ) || window.overviewWeek;
+	window.overviewWeek = f_timestamp;
 
 	// refresh displayed week time range
 	$('#overview-week-timerange').text( getHumanReadableDate(f_timestamp) + ' - ' + getHumanReadableDate( f_timestamp + 1000*3600*24*6 ) );
@@ -142,8 +143,9 @@ function refreshWeekOverview(f_timestamp) {
 			//$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');//TODO
 			$('#overview-week select.overview-week-'+i).val( currentDay[0].type );
 			
-			// save timestamp on select element for direct access
+			// save timestamp on select element and weekday table element for direct access
 			$('#overview-week select.overview-week-'+i).attr('data-timestamp', currentDay[0].timestamp);
+			$('#overview-week tbody td.overview-week-'+i).attr('data-timestamp', currentDay[0].timestamp);
 			
 			// overview week day type select handler
 			$('#overview-week select.overview-week-'+i).on('change', function(e) {
@@ -168,7 +170,12 @@ function refreshWeekOverview(f_timestamp) {
 				$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
 			}).change();
 			
-			// TODO clickable column to select day
+			// clickable column to select day overview
+			$('#overview-week tbody td.overview-week-'+i).on('click', function(e) {
+			
+				console.log( $(e.target).attr('class'), $(e.target).attr('data-timestamp') );
+				refreshDayOverview( $(e.target).attr('data-timestamp') );
+			});
 			
 			// output periods
 			for(j = 0; j < currentPeriods.length; j++) {
@@ -205,7 +212,8 @@ function refreshWeekOverview(f_timestamp) {
  */
 function refreshDayOverview(f_timestamp) {
 
-	f_timestamp = getMidnightTimestamp(f_timestamp) || window.overviewDay;
+	f_timestamp = getMidnightTimestamp( parseInt(f_timestamp) ) || window.overviewDay;
+	window.overviewDay = f_timestamp;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
 	$('#overview-day-periods').empty();
@@ -213,14 +221,22 @@ function refreshDayOverview(f_timestamp) {
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
 	
-	for(i = 0; i < periods.length; i++) {
+	if(periods.length != 0) {
 	
-		 pStart = getHumanReadableHours(periods[i].start);
-		 pEnd = getHumanReadableHours(periods[i].end);
+		for(i = 0; i < periods.length; i++) {
+		
+			 pStart = getHumanReadableHours(periods[i].start);
+			 pEnd = getHumanReadableHours(periods[i].end);
+		
+			$('#overview-day-periods').append('<tr><td>' + pStart + '</td><td>' + pEnd + '</td><td class="text-right"><a href="#" id="overview-day-edit-' + periods + '"><span class="glyphicon glyphicon-pencil"></span></a></td></tr>');
+			//TODO edit handler
+		}
 	
-		$('#overview-day-periods').append('<tr><td>' + pStart + '</td><td>' + pEnd + '</td><td class="text-right"><a href="#" id="overview-day-edit-' + periods + '"><span class="glyphicon glyphicon-pencil"></span></a></td></tr>');
+	// no working periods on this day
+	} else {
+	
+		$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');
 	}
-	//TODO
 }
 
 
@@ -484,16 +500,14 @@ $('#tracking-button').on('click', function(e) {
 // previous week button handler
 $('#overview-week-button-prev').on('click', function(e) {
 
-	window.overviewWeek = window.overviewWeek - (1000*3600*24*7);
-	refreshWeekOverview();
+	refreshWeekOverview( window.overviewWeek - (1000*3600*24*7) );
 });
 
 
 // previous week button handler
 $('#overview-week-button-next').on('click', function(e) {
 
-	window.overviewWeek = window.overviewWeek + (1000*3600*24*7);
-	refreshWeekOverview();
+	refreshWeekOverview( window.overviewWeek + (1000*3600*24*7) );
 });
 
 
