@@ -85,6 +85,7 @@ button {
 /* working period block */
 #overview-week tbody td {
 	position: relative;
+	cursor: pointer;
 }
 #overview-week tbody td .working-period {
 	position: absolute;

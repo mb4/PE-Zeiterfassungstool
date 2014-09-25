@@ -5,7 +5,77 @@
  * 2014 (c) Marvin Botens, Stephan Giesau  *
  * 										   *
  * * * * * * * * * * * * * * * * * * * * * */
- 
+
+
+
+/////////////////////////////////////////////
+// FRONTEND HELPER FUNCTIONS               //
+/////////////////////////////////////////////
+
+/**
+ * Create a date for output on UI from a given timestamp
+ * 
+ * @param {timestamp/int} timestamp
+ * @returns {string} date in human-readable format
+ */
+function getHumanReadableDate(f_timestamp) {
+	
+	var humanDate = new Date(f_timestamp);
+	
+	return '' + (((humanDate.getDate()+'').length == 1) ? '0' : '') + humanDate.getDate() + '.' +
+				(((humanDate.getMonth()+1+'').length == 1) ? '0' : '') + (humanDate.getMonth()+1) + '.' +
+				humanDate.getFullYear();
+}
+
+
+/**
+ * Return timestamp from a given date in human-readable format
+ * 
+ * @param {string} date in human-readable format
+ * @returns {timestamp/int} timestamp
+ */
+function getTimestampFromDate(f_date) {
+	
+	var sp = f_date.split('.');
+	var date = new Date(sp[2], parseInt(sp[1])-1, sp[0], 0, 0, 0, 0);
+	
+	return date.getTime();
+}
+
+
+/**
+ * Create a H:i hours representation of a decimal float
+ * 
+ * @param {float} hours in decimal format
+ * @returns {string} hours in human-readable format
+ */
+function getHumanReadableHours(f_timestamp) {
+
+	var humanDate = new Date(f_timestamp);
+	
+	return '' + (((humanDate.getHours()+'').length == 1) ? '0' : '') + humanDate.getHours() + ':' +
+			(((humanDate.getMinutes()+'').length == 1) ? '0' : '') + humanDate.getMinutes();
+}
+
+
+/**
+ * Create a H:i hours representation of a decimal float
+ * 
+ * @param {float} f_decimal hours in decimal format
+ * @returns {string} hours in human-readable format
+ */
+function getHumanReadableHoursFromDecimal(f_decimal) {
+
+	var humanHours = (''+f_decimal).split('.');
+	
+	var returnHours = humanHours[0];
+	var returnMinutes = (parseFloat( '0.' + humanHours[1] ) * 60).toFixed() + '';
+	
+	return returnHours + ':' + ((returnMinutes.length == 1) ? '0'+returnMinutes : returnMinutes);
+}
+
+
+
 
 
 /////////////////////////////////////////////
@@ -32,6 +102,11 @@ function refreshInternshipOverview(f_internship_id) {
 		// fill table with free days
 		$freedays = $('#overview-internship-freedays').empty();
 		//TODO
+		
+		// fill statistics
+		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) );
+		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) );
+		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) );
 	}
 }
 
@@ -43,7 +118,8 @@ function refreshInternshipOverview(f_internship_id) {
  */
 function refreshWeekOverview(f_timestamp) {
 
-	f_timestamp = parseInt(getWeekTimestamp(f_timestamp)) || parseInt(window.overviewWeek);
+	f_timestamp = getWeekTimestamp( parseInt(f_timestamp) ) || window.overviewWeek;
+	window.overviewWeek = f_timestamp;
 
 	// refresh displayed week time range
 	$('#overview-week-timerange').text( getHumanReadableDate(f_timestamp) + ' - ' + getHumanReadableDate( f_timestamp + 1000*3600*24*6 ) );
@@ -67,8 +143,9 @@ function refreshWeekOverview(f_timestamp) {
 			//$('#overview-week select.overview-week-'+i).find('option[value="' + currentDay[0].type + '"]').attr('selected','selected');//TODO
 			$('#overview-week select.overview-week-'+i).val( currentDay[0].type );
 			
-			// save timestamp on select element for direct access
+			// save timestamp on select element and weekday table element for direct access
 			$('#overview-week select.overview-week-'+i).attr('data-timestamp', currentDay[0].timestamp);
+			$('#overview-week tbody td.overview-week-'+i).attr('data-timestamp', currentDay[0].timestamp);
 			
 			// overview week day type select handler
 			$('#overview-week select.overview-week-'+i).on('change', function(e) {
@@ -93,7 +170,12 @@ function refreshWeekOverview(f_timestamp) {
 				$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
 			}).change();
 			
-			// TODO clickable column to select day
+			// clickable column to select day overview
+			$('#overview-week tbody td.overview-week-'+i).on('click', function(e) {
+			
+				console.log( $(e.target).attr('class'), $(e.target).attr('data-timestamp') );
+				refreshDayOverview( $(e.target).attr('data-timestamp') );
+			});
 			
 			// output periods
 			for(j = 0; j < currentPeriods.length; j++) {
@@ -117,9 +199,9 @@ function refreshWeekOverview(f_timestamp) {
 	}
 	
 	// week statistics
-	$('#overview-week-stat-total').text('Test');
-	$('#overview-week-stat-worked').text('Test');
-	$('#overview-week-stat-due').text('Test');
+	$('#overview-week-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
+	$('#overview-week-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp, f_timestamp + 1000*3600*24*6) ) );
 }
 
 
@@ -130,10 +212,31 @@ function refreshWeekOverview(f_timestamp) {
  */
 function refreshDayOverview(f_timestamp) {
 
-	f_timestamp = getMidnightTimestamp(f_timestamp) || window.overviewDay;
+	f_timestamp = getMidnightTimestamp( parseInt(f_timestamp) ) || window.overviewDay;
+	window.overviewDay = f_timestamp;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
-	//TODO
+	$('#overview-day-periods').empty();
+	
+	var periods = getWorkingPeriods(window.internship, f_timestamp);
+	var pStart, pEnd;
+	
+	if(periods.length != 0) {
+	
+		for(i = 0; i < periods.length; i++) {
+		
+			 pStart = getHumanReadableHours(periods[i].start);
+			 pEnd = getHumanReadableHours(periods[i].end);
+		
+			$('#overview-day-periods').append('<tr><td>' + pStart + '</td><td>' + pEnd + '</td><td class="text-right"><a href="#" id="overview-day-edit-' + periods + '"><span class="glyphicon glyphicon-pencil"></span></a></td></tr>');
+			//TODO edit handler
+		}
+	
+	// no working periods on this day
+	} else {
+	
+		$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');
+	}
 }
 
 /**
@@ -248,6 +351,17 @@ $('#form-internship-end').datepicker();
 // EVENT HANDLERS                          //
 /////////////////////////////////////////////
 
+// handler before closing browser tab or window
+$(window).bind('beforeunload', function (e) {
+
+	// if tracking is running
+	if(window.trackingStart != 0) {
+	
+		$('#tracking-button').click();
+	}
+});
+
+
 // edit internship button handler
 $('#edit-internship-button').on('click', function() {
 
@@ -301,6 +415,13 @@ $('#create-internship-button').on('click', function() {
 	
 	// open modal with form
 	$('#form-internship').modal();
+});
+
+
+// change internship button handler
+$('#change-internship-button').on('click', function() {
+
+	alert('Nothing happens.');
 });
 
 
@@ -445,16 +566,14 @@ $('#tracking-button').on('click', function(e) {
 // previous week button handler
 $('#overview-week-button-prev').on('click', function(e) {
 
-	window.overviewWeek = window.overviewWeek - (1000*3600*24*7);
-	refreshWeekOverview();
+	refreshWeekOverview( window.overviewWeek - (1000*3600*24*7) );
 });
 
 
 // previous week button handler
 $('#overview-week-button-next').on('click', function(e) {
 
-	window.overviewWeek = window.overviewWeek + (1000*3600*24*7);
-	refreshWeekOverview();
+	refreshWeekOverview( window.overviewWeek + (1000*3600*24*7) );
 });
 
 

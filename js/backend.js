@@ -65,38 +65,6 @@ function generateUniqueId(timestamp, salt) {
 
 
 /**
- * Create a date for output on UI from a given timestamp
- * 
- * @param {timestamp/int} timestamp
- * @returns {string} date in human-readable format
- */
-function getHumanReadableDate(f_timestamp) {
-	
-	var humanDate = new Date(f_timestamp);
-	
-	
-	return '' + (((humanDate.getDate()+'').length == 1) ? '0' : '') + humanDate.getDate() + '.' +
-				(((humanDate.getMonth()+1+'').length == 1) ? '0' : '') + (humanDate.getMonth()+1) + '.' +
-				humanDate.getFullYear();
-}
-
-
-/**
- * Return timestamp from a given date in human-readable format
- * 
- * @param {string} date in human-readable format
- * @returns {timestamp/int} timestamp
- */
-function getTimestampFromDate(f_date) {
-	
-	var sp = f_date.split('.');
-	var date = new Date(sp[2], parseInt(sp[1])-1, sp[0], 0, 0, 0, 0);
-	
-	return date.getTime();
-}
-
-
-/**
  * converts a period (start, end) into a list of days
  * 
  * @param {type} f_start

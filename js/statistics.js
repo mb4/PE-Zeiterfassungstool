@@ -44,6 +44,7 @@ function getTotalWorkTime(f_internship_id, f_start, f_end)
     return total_work_time;
 }
 
+
 /**
  * calculates the completed work time for a specified time frame
  * 
@@ -73,13 +74,14 @@ function getCompletedWorkTime(f_internship_id, f_start, f_end)
     
     //calculate sum of completed work hours
     var completed_work_time = 0;
-    for(var x=0; x<working_periods.length; x++)
+    for(var x = 0; x < working_periods.length; x++)
     {
-        completed_work_time += working_periods[x].f_end - working_periods[x].f_start;
+        completed_work_time += working_periods[x].end - working_periods[x].start;
     }
     
-    return completed_work_time;
+    return completed_work_time / (3600*1000);
 }
+
 
 /**
  * calculates the due work time for a specified time frame
