@@ -354,7 +354,7 @@ function refreshDayOverview(f_timestamp) {
 	var day = getDays(window.internship, f_timestamp);
 
 	// fill day info
-	$('#overview-day-info').text(day[0].info);
+	$('#overview-day-info').val(day[0].info);
 
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
