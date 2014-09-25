@@ -44,6 +44,10 @@ function refreshInternshipOverview(f_internship_id) {
 function refreshWeekOverview(f_timestamp) {
 
 	f_timestamp = getWeekTimestamp(f_timestamp) || window.overviewWeek;
+	
+	//for(i = 0; i <= 6; i++) {
+
+	//}
 	//TODO
 }
 
@@ -106,6 +110,8 @@ function init() {
 			$('#form-internship-cancel').hide();
 			$('#form-internship-delete').hide();
 			$('#form-internship-close').hide();
+			
+			$('#form-internship-id').val('');
 			
 			$('#form-internship').modal({
 				backdrop: 'static',
@@ -170,6 +176,8 @@ $('#create-internship-button').on('click', function() {
 	$('#form-internship-delete').hide();
 	$('#form-internship-close').show();
 	
+	$('#form-internship-id').val('');
+	
 	// open modal with form
 	$('#form-internship').modal();
 });
@@ -219,7 +227,10 @@ $('#form-internship-save').on('click', function() {
 			// create new entry
 			} else {
 			
-				createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], []);
+				var new_unique_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], []);
+				
+				console.log(new_unique_id);
+				refreshInternshipOverview(new_unique_id);
 			}
 			
 			$('#form-internship').modal('hide');
@@ -238,6 +249,8 @@ $('#form-internship-delete').on('click', function() {
 		if(deleteConfirm) {
 		
 			deleteInternship( $('#form-internship-id').val() );
+			
+			$('#form-internship').modal('hide');
 			
 			// update week and day list
 			refreshWeekOverview();
@@ -288,7 +301,7 @@ $('#tracking-button').on('click', function(e) {
 		// add working period to day overview (if displayed day there is current day)
 		if( getMidnightTimestamp( Date.now() ) == window.overviewDay) {
 
-			//TODO add to day overview
+		//TODO add to day overview
 		}		
 	}
 });
@@ -304,7 +317,6 @@ $('#overview-week select').on('change', function(e) {
 	var colorClass = 'day-bg-' + ( $(e.target).val() ).replace(' ', '-').toLowerCase();
 	
 	$('#overview-week .' + columnClass).removeClass(dayClasses).addClass(columnClass + ' ' + colorClass);
-	
-});
+}).change();
 
 
