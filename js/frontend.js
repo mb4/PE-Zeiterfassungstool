@@ -43,11 +43,36 @@ function refreshInternshipOverview(f_internship_id) {
  */
 function refreshWeekOverview(f_timestamp) {
 
-	f_timestamp = getWeekTimestamp(f_timestamp) || window.overviewWeek;
-	
-	//for(i = 0; i <= 6; i++) {
+	f_timestamp = parseInt(getWeekTimestamp(f_timestamp)) || parseInt(window.overviewWeek);
 
-	//}
+	// refresh displayed week time range
+	$('#overview-week-timerange').text( getHumanReadableDate(f_timestamp) + ' - ' + getHumanReadableDate( f_timestamp + 1000*3600*24*6 ) );
+	
+	var currentDay, currentPeriods;
+	
+	for(i = 0; i <= 6; i++) {
+
+		currentTimestamp = f_timestamp + i * 1000*3600*24;
+		currentDay = db.query('day', {internship_id: window.internship, timestamp: currentTimestamp});
+		currentPeriods = getWorkingPeriods(window.internship, currentTimestamp);
+		
+		// set type of day
+		
+		
+		$('#overview-week tbody td.overview-week-'+i).empty();
+		
+		// output periods
+		for(j = 0; j < currentPeriods.length; j++) {
+			
+			pStart = new Date( currentPeriods[j].start );
+			pEnd = new Date( currentPeriods[j].end );
+			pOffset = ((pStart.getHours()/24 + pStart.getMinutes()/(24*60) + pStart.getSeconds()/(24*3600) + pStart.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
+			pOffsetEnd = ((pEnd.getHours()/24 + pEnd.getMinutes()/(24*60) + pEnd.getSeconds()/(24*3600) + pEnd.getMilliseconds()/(24*3600*1000)) * 100).toFixed(2);
+			pHeight = (pOffsetEnd - pOffset < 2) ? 2 : pOffsetEnd - pOffset;
+			
+			$('#overview-week tbody td.overview-week-'+i).append('<div class="working-period" style="top:' + pOffset + '%;height:' + pHeight + '%;">&nbsp;</div>');
+		}
+	}
 	//TODO
 }
 
@@ -97,7 +122,7 @@ function init() {
 	// no internship available, show welcome modal
 	} else {
 	
-		$('#welcome').modal({
+		$('#modal-welcome').modal({
 			backdrop: 'static',
 			keyboard: false
 		});
@@ -105,7 +130,7 @@ function init() {
 		// button handler for closing welcome and opening internship form
 		$('#welcome-button-close').on('click', function() {
 	
-			$('#welcome').modal('hide');
+			$('#modal-welcome').modal('hide');
 					
 			$('#form-internship-cancel').hide();
 			$('#form-internship-delete').hide();
@@ -161,10 +186,6 @@ $('#edit-internship-button').on('click', function() {
 
 		alert('No entry found for editing with given ID.');//TODO change visualization?
 	}
-	
-	// TODO load data into form elements (input via element ID)
-	// TODO set values of data-date attribute for datepickers
-
 });
 
 // create internship button handler
@@ -209,7 +230,7 @@ $('#form-internship-save').on('click', function() {
 		// check if endDate comes after startDate
 		if( startDate > endDate ) {
 
-			alert('The end date must be later than the start date.');
+			alert('The end date must be later than the start date.');//TODO better alert?
 
 		// no errors, save data
 		} else {
@@ -227,10 +248,10 @@ $('#form-internship-save').on('click', function() {
 			// create new entry
 			} else {
 			
-				var new_unique_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], []);
+				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, [], []);
 				
-				console.log(new_unique_id);
-				refreshInternshipOverview(new_unique_id);
+				refreshInternshipOverview(update_id);
+				window.internship = update_id;
 			}
 			
 			$('#form-internship').modal('hide');
@@ -307,7 +328,23 @@ $('#tracking-button').on('click', function(e) {
 });
 
 
-// overview week handlers
+// previous week button handler
+$('#overview-week-button-prev').on('click', function(e) {
+
+	window.overviewWeek = window.overviewWeek - (1000*3600*24*7);
+	refreshWeekOverview();
+});
+
+
+// previous week button handler
+$('#overview-week-button-next').on('click', function(e) {
+
+	window.overviewWeek = window.overviewWeek + (1000*3600*24*7);
+	refreshWeekOverview();
+});
+
+
+// overview week day type handlers
 $('#overview-week select').on('change', function(e) {
 	
 	var dayClasses = 'day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation';

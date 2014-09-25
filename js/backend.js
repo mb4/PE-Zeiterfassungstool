@@ -72,12 +72,12 @@ function generateUniqueId(timestamp, salt) {
  */
 function getHumanReadableDate(f_timestamp) {
 	
-	var date = new Date(f_timestamp);
+	var humanDate = new Date(f_timestamp);
 	
 	
-	return '' + (((date.getDate()+'').length == 1) ? '0' : '') + date.getDate() + '.' +
-				(((date.getMonth()+1+'').length == 1) ? '0' : '') + (date.getMonth()+1) + '.' +
-				date.getFullYear();
+	return '' + (((humanDate.getDate()+'').length == 1) ? '0' : '') + humanDate.getDate() + '.' +
+				(((humanDate.getMonth()+1+'').length == 1) ? '0' : '') + (humanDate.getMonth()+1) + '.' +
+				humanDate.getFullYear();
 }
 
 

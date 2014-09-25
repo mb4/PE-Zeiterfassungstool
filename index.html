@@ -42,19 +42,19 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12 col-md-6">
-                	<h2>Week overview <small><a id="overview-week-button-prev" href="#"><span class="glyphicon glyphicon-chevron-left"></span></a> &nbsp;&nbsp; <span id="overview-week-timerange">22.09. - 26.09.2014</span> &nbsp;&nbsp; <a id="overview-week-button-next" href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></small></h2>
+                	<h2>Week overview <small><a id="overview-week-button-prev" href="#"><span class="glyphicon glyphicon-chevron-left"></span></a> &nbsp;&nbsp; <span id="overview-week-timerange">&mdash;</span> &nbsp;&nbsp; <a id="overview-week-button-next" href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></small></h2>
                 	
                 	<table class="table table-bordered table-condensed" id="overview-week">
 	                	<thead>
 	                		<tr>
-	                			<th width="5.5%"><span class="glyphicon glyphicon-time"></span></th>
-	                			<th class="overview-week-0" width="13.5%">Monday</th>
-	                			<th class="overview-week-1" width="13.5%">Tuesday</th>
-	                			<th class="overview-week-2" width="13.5%">Wednesday</th>
-	                			<th class="overview-week-3" width="13.5%">Thursday</th>
-	                			<th class="overview-week-4" width="13.5%">Friday</th>
-	                			<th class="overview-week-5" width="13.5%"><small>Saturday</small></th>
-	                			<th class="overview-week-6" width="13.5%"><small>Sunday</small></th>
+	                			<th style="width:5.5%"><span class="glyphicon glyphicon-time"></span></th>
+	                			<th class="overview-week-0" style="width:13.5%">Monday</th>
+	                			<th class="overview-week-1" style="width:13.5%">Tuesday</th>
+	                			<th class="overview-week-2" style="width:13.5%">Wednesday</th>
+	                			<th class="overview-week-3" style="width:13.5%">Thursday</th>
+	                			<th class="overview-week-4" style="width:13.5%">Friday</th>
+	                			<th class="overview-week-5" style="width:13.5%"><small>Saturday</small></th>
+	                			<th class="overview-week-6" style="width:13.5%"><small>Sunday</small></th>
 	                		</tr>
 	                		<tr>
 	                			<td></td>
@@ -138,25 +138,44 @@
 	                		</tr>
 	                	</tbody>
                 	</table>
+                	<br>
+                	
+                	<div class="row overview-week-stat">
+                		<div class="col-xs-6 col-md-4">
+                			<div class="well">
+                				<p>Total</p><h2 id="overview-week-stat-total">38.5</h2>
+                			</div>
+                		</div>
+                		<div class="col-xs-6 col-md-4">
+                			<div class="well">
+                				<p>Worked</p><h2 id="overview-week-stat-worked" class="text-success">32.74</h2>
+                			</div>
+                		</div>
+                		<div class="col-xs-6 col-md-4">
+                			<div class="well">
+                				<p>Due</p><h2 id="overview-week-stat-due" class="text-danger">5.21</h2>
+                			</div>
+                		</div>
+                	</div>
                 </div>
                 <div class="col-xs-12 col-md-3">
-                	<h2>Day overview <small id="overview-day-date">-</small></h2>
+                	<h2>Day overview <small id="overview-day-date">&mdash;</small></h2>
                 </div>
                 <div class="col-xs-12 col-md-3">
 	                <div class="well">
 	
-						<h3 id="overview-internship-name">PE5 - New York</h3>
+						<h3 id="overview-internship-name">Internship</h3>
 						
 						<hr>
 						
 						<div class="row">
 	                		<div class="col-xs-12 col-md-6">
 								<h4>Start Date</h4>
-								<p id="overview-internship-start">12.05.2014</p>
+								<p id="overview-internship-start">&mdash;</p>
 							</div>
 							<div class="col-xs-12 col-md-6">
 								<h4>End Date</h4>
-								<p id="overview-internship-end">31.08.2014</p>
+								<p id="overview-internship-end">&mdash;</p>
 							</div>
 						</div>
 						
@@ -304,7 +323,24 @@
 		  </div>
 		</div>
 		<!-- Modal welcome -->
-		<div class="modal fade" id="welcome" tabindex="-1" role="dialog">
+		<div class="modal fade" id="modal-welcome" tabindex="-1" role="dialog">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title" id="form-internship-title">Welcome</h4>
+		      </div>
+		      <div class="modal-body">
+				<p>Welcome to TimeTrackTool, your tool for easy tracking of working time.</p>
+				<p>All time tracked is directly recorded for an internship or project.<br>To start, please create an internship first.</p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id="welcome-button-close">Create new internship</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal welcome -->
+		<div class="modal" id="modal-ie8" tabindex="-1" role="dialog">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">

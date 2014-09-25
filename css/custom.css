@@ -29,6 +29,11 @@ button {
  * Customizations
  */
  
+.well {
+	border-radius: 0;
+	box-shadow: none;
+}
+ 
 .navbar {
 	border-bottom: 5px solid rgb(66, 139, 202);
 }
@@ -89,6 +94,14 @@ button {
 	width: 100%;
 	background-color: #ddd;
 	z-index: 100;
+}
+
+/* statistic blocks */
+.overview-week-stat .well {
+	padding: 10px;
+}
+.overview-week-stat .well p, .overview-week-stat .well h2 {
+	margin: 0;
 }
 
 /* classes for day type coloring */
