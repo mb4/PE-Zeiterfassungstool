@@ -355,7 +355,7 @@ function refreshDayOverview(f_timestamp) {
 	var day = getDays(window.internship, f_timestamp);
 
 	// fill day info
-	$('#overview-day-info').val(day[0].info);
+	$('#overview-day-info').val(day[0].info).attr('disabled','disabled');
 
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
@@ -823,3 +823,23 @@ $('#overview-day-button-addperiod').on('click', function() {
 	$('#overview-day-edit-'+uid).click();
 });
 
+
+// edit day info button handler
+$('#overview-day-info-edit').on('click', function() {
+
+	$('#overview-day-info').removeAttr('disabled').focus();
+	$('#overview-day-info-edit').hide();
+	$('#overview-day-info-save').show();
+});
+
+// save day info button handler
+$('#overview-day-info-save').on('click', function() {
+
+	// save new info
+	var day = getDays(window.internship, window.overviewDay);
+	createOrUpdateDay(window.internship, window.overviewDay, day[0].type, $('#overview-day-info').val() );
+
+	$('#overview-day-info').attr('disabled','disabled');
+	$('#overview-day-info-edit').show();
+	$('#overview-day-info-save').hide();
+});
