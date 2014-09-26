@@ -565,11 +565,20 @@ $('#create-internship-button').on('click', function() {
 
 	$('#form-internship-title').text('Create new internship');
 	
+        //emtpy internship details
+        $('#form-internship-name').val("");
+        $('#form-internship-start').val("");
+        $('#form-internship-end').val("");
+        $('#form-internship-id').val("");
+        
 	$('#form-internship-cancel').show();
 	$('#form-internship-delete').hide();
 	$('#form-internship-close').show();
 	
 	$('#form-internship-id').val('');
+        
+        //empty vacation and holiday details
+        $("#dynblock-wrapper").html("");
 	
 	// open modal with form
 	$('#form-internship').modal();
