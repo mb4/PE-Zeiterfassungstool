@@ -296,6 +296,7 @@ function addWorkingPeriodBlock(id, i, start, end) {
 		// update week overview, if current day is displayed
 		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
 			refreshWeekOverview();
+		refreshInternshipOverview();
 		
 		// show/hide buttons
 		$('#overview-day-edit-'+x).show();
@@ -321,6 +322,7 @@ function addWorkingPeriodBlock(id, i, start, end) {
 		// update week overview, if current day is displayed
 		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
 			refreshWeekOverview();
+		refreshInternshipOverview();
 		
 		// show/hide buttons
 		$('#overview-day-edit-'+x).show();
