@@ -212,7 +212,8 @@ function refreshWeekOverview(f_timestamp) {
 
 		// no data for current day
 		} else {
-
+		
+			$('#overview-week tbody td.overview-week-'+i).attr('data-timestamp', 'false');
 			$('#overview-week select.overview-week-'+i).attr('disabled', 'disabled');
 			
 			$('#overview-week .overview-week-'+i).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation');
