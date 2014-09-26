@@ -122,14 +122,9 @@ function refreshInternshipOverview(f_internship_id) {
 		$('#overview-internship-start').text( getHumanReadableDate(internship_data[0].start) );
 		$('#overview-internship-end').text( getHumanReadableDate(internship_data[0].end) );
 		
-		// fill table with free days
-		$freedays = $('#overview-internship-freedays').empty();
-		//TODO
-		
 		// fill statistics
                 var internship = getInternships(window.internship)[0];
                 var today = new Date();
-                console.log(internship.start);
                 
 		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
 		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );

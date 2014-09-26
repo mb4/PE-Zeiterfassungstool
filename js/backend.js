@@ -251,7 +251,7 @@ function createOrUpdateDay(f_internship_id, f_timestamp, f_type, f_info)
         type: f_type,
     };
     
-    if (typeof(f_info) == "String") data.info = f_info;
+    if (typeof(f_info) == "string") data.info = f_info;
     
     db.insertOrUpdate("day",
     {
@@ -330,8 +330,8 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
      {
         var date = new Date(timestamp);
         var holiday_index = indexOfObjectAttributeValueInObjectArray(f_holidays, "timestamp", date.getTime());
-        var type = "";
-        var info = "";
+        var type = undefined;
+        var info = undefined;
 
         //if (f_holidays.indexOf(date.getTime()) >= 0) //ToDo: remove
         if (holiday_index >= 0)
