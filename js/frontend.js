@@ -290,21 +290,30 @@ function addWorkingPeriodBlock(id, i, start, end) {
 		var wStart = getTimestampFromHours( window.overviewDay , $('#overview-day-start-'+x).val() );
 		var wEnd = getTimestampFromHours( window.overviewDay , $('#overview-day-end-'+x).val() );
 		
-		createOrUpdateWorkingPeriod(wStart, wEnd, window.internship, null, window.overviewDay, id);
+		// validate: start date smaller end date?
+		if(wEnd < wStart || wEnd == wStart) {
 		
-		// update week overview, if current day is displayed
-		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
-			refreshWeekOverview();
-		refreshInternshipOverview();
+			alert('End hours must be bigger than start hours, and not be equal.');
+			$('#overview-day-end-'+x).focus();
+			
+		} else {
 		
-		// show/hide buttons
-		$('#overview-day-edit-'+x).show();
-		$('#overview-day-save-'+x).hide();
-		$('#overview-day-delete-'+x).hide();
-		
-		// disable input fields
-		$('#overview-day-start-'+x).attr('disabled','disabled');
-		$('#overview-day-end-'+x).attr('disabled','disabled');
+			createOrUpdateWorkingPeriod(wStart, wEnd, window.internship, null, window.overviewDay, id);
+			
+			// update week overview, if current day is displayed
+			if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
+				refreshWeekOverview();
+			refreshInternshipOverview();
+			
+			// show/hide buttons
+			$('#overview-day-edit-'+x).show();
+			$('#overview-day-save-'+x).hide();
+			$('#overview-day-delete-'+x).hide();
+			
+			// disable input fields
+			$('#overview-day-start-'+x).attr('disabled','disabled');
+			$('#overview-day-end-'+x).attr('disabled','disabled');
+		}
 	});
 	
 	$('#overview-day-delete-'+i).on('click', function(e) {
@@ -786,6 +795,7 @@ $('#tracking-button').on('click', function(e) {
 
 		// stop timer for tracking
 		$('#tracking-time').runner('stop');
+		$('#tracking-time').empty();
 
 		// save to working_period
 		var dateNow = Date.now();
