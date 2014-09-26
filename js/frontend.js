@@ -73,7 +73,7 @@ function getHumanReadableHoursFromDecimal(f_decimal) {
 	
 	// if round error (60 minutes), adjust values
 	if(returnMinutes == 60) {
-		
+		// TODO problems with negative values?
 		returnHours++;
 		returnMinutes = 0;
 	}
@@ -216,7 +216,8 @@ function refreshWeekOverview(f_timestamp) {
 
 		// no data for current day
 		} else {
-
+		
+			$('#overview-week tbody td.overview-week-'+i).attr('data-timestamp', 'false');
 			$('#overview-week select.overview-week-'+i).attr('disabled', 'disabled');
 			
 			$('#overview-week .overview-week-'+i).removeClass('day-bg-working-day day-bg-weekend day-bg-holiday day-bg-vacation');
@@ -299,6 +300,7 @@ function addWorkingPeriodBlock(id, i, start, end) {
 		// update week overview, if current day is displayed
 		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
 			refreshWeekOverview();
+		refreshInternshipOverview();
 		
 		// show/hide buttons
 		$('#overview-day-edit-'+x).show();
@@ -324,6 +326,7 @@ function addWorkingPeriodBlock(id, i, start, end) {
 		// update week overview, if current day is displayed
 		if( getWeekTimestamp(window.overviewDay) == window.overviewWeek)
 			refreshWeekOverview();
+		refreshInternshipOverview();
 		
 		// show/hide buttons
 		$('#overview-day-edit-'+x).show();
@@ -346,10 +349,19 @@ function addWorkingPeriodBlock(id, i, start, end) {
  */
 function refreshDayOverview(f_timestamp) {
 
-	//TODO add button for creating new working periods
 	//TODO add day statistics
 
 	f_timestamp = getMidnightTimestamp( parseInt(f_timestamp) ) || window.overviewDay;
+	
+	currentInternship = getInternships(window.internship);
+	
+	// check if current day is outside internship range
+	if(currentInternship[0].end < f_timestamp) {
+		f_timestamp = currentInternship[0].end;
+	} else if(currentInternship[0].start > f_timestamp) {
+		f_timestamp = currentInternship[0].start;
+	}
+	
 	window.overviewDay = f_timestamp;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
@@ -358,7 +370,7 @@ function refreshDayOverview(f_timestamp) {
 	var day = getDays(window.internship, f_timestamp);
 
 	// fill day info
-	$('#overview-day-info').val(day[0].info);
+	$('#overview-day-info').val(day[0].info).attr('disabled','disabled');
 
 	var periods = getWorkingPeriods(window.internship, f_timestamp);
 	var pStart, pEnd;
@@ -439,8 +451,8 @@ function addDynblock(f_type, f_info, f_start, f_end)
             +'</div>\n'
     
     $("#dynblock-wrapper").prepend(dynblock);
-    $('#form-internship-dynblock-col1-'+id).datepicker();
-    if (f_type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
+    $('#form-internship-dynblock-col1-'+id).datepicker({weekStart:1});
+    if (f_type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker({weekStart:1});
     
     // eventhandler dynblock delete (deletes vacation period or holiday from internship form)
     $('#form-internship-dynblock-delete-'+id).on('click', function(e) {
@@ -505,8 +517,8 @@ function init() {
 init();
 
 // add datepickers to internship form
-$('#form-internship-start').datepicker();
-$('#form-internship-end').datepicker();
+$('#form-internship-start').datepicker({weekStart:1});
+$('#form-internship-end').datepicker({weekStart:1});
 
 
 
@@ -571,8 +583,8 @@ $('#create-internship-button').on('click', function() {
 	
         //emtpy internship details
         $('#form-internship-name').val("");
-        $('#form-internship-start').val("");
-        $('#form-internship-end').val("");
+        $('#form-internship-start').val("").attr('data-date','');
+        $('#form-internship-end').val("").attr('data-date','');
         $('#form-internship-id').val("");
         
 	$('#form-internship-cancel').show();
@@ -682,7 +694,7 @@ $('#form-internship-save').on('click', function() {
 			// save updated entry
 			if(i_id.length != 0) {
 
-				createOrUpdateInternship(i_name, startDate, endDate, 7.8, holidays, vacation_days, i_id);
+				createOrUpdateInternship(i_name, startDate, endDate, 7.7, holidays, vacation_days, i_id);
 				
 				// if the edited internship is currently displayed, update view
 				if(i_id == window.internship) {
@@ -694,7 +706,7 @@ $('#form-internship-save').on('click', function() {
 			// create new entry
 			} else {
 			
-				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, holidays, vacation_days);
+				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.7, holidays, vacation_days);
 				
 				refreshInternshipOverview(update_id);
 				window.internship = update_id;
@@ -744,7 +756,7 @@ $('.btn-add-dynblock').on('click', function(e) {
    /*$("#dynblock-wrapper").prepend(getDynblock(id, type));
    $('#form-internship-dynblock-col1-'+id).datepicker();
    if (type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
-   */
+   */ //TODO remove
 });
 
 
@@ -826,3 +838,23 @@ $('#overview-day-button-addperiod').on('click', function() {
 	$('#overview-day-edit-'+uid).click();
 });
 
+
+// edit day info button handler
+$('#overview-day-info-edit').on('click', function() {
+
+	$('#overview-day-info').removeAttr('disabled').focus();
+	$('#overview-day-info-edit').hide();
+	$('#overview-day-info-save').show();
+});
+
+// save day info button handler
+$('#overview-day-info-save').on('click', function() {
+
+	// save new info
+	var day = getDays(window.internship, window.overviewDay);
+	createOrUpdateDay(window.internship, window.overviewDay, day[0].type, $('#overview-day-info').val() );
+
+	$('#overview-day-info').attr('disabled','disabled');
+	$('#overview-day-info-edit').show();
+	$('#overview-day-info-save').hide();
+});

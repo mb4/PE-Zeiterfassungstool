@@ -51,7 +51,6 @@ button {
 }
 
 
-
 /**
  * day overview styles
  */
@@ -110,6 +109,9 @@ button {
 #overview-week tbody td {
 	position: relative;
 	cursor: pointer;
+}
+#overview-week tbody td[data-timestamp="false"] {
+	cursor: default;
 }
 #overview-week tbody td:first-child {
 	cursor: default;
