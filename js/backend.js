@@ -328,8 +328,8 @@ function createOrUpdateInternship(f_name, f_start, f_end, f_daily_hours, f_holid
      {
         var date = new Date(timestamp);
         var holiday_index = indexOfObjectAttributeValueInObjectArray(f_holidays, "timestamp", date.getTime());
-        var type;
-        var info;
+        var type = "";
+        var info = "";
 
         //if (f_holidays.indexOf(date.getTime()) >= 0) //ToDo: remove
         if (holiday_index >= 0)
