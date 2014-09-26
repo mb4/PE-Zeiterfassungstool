@@ -123,12 +123,21 @@ function refreshInternshipOverview(f_internship_id) {
 		$('#overview-internship-end').text( getHumanReadableDate(internship_data[0].end) );
 		
 		// fill statistics
-                var internship = getInternships(window.internship)[0];
-                var today = new Date();
+        var internship = getInternships(window.internship)[0];
+        var today = new Date();
                 
 		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
 		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
 		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
+		
+		// check if current day is in internship range, if not disable the tracking button
+		if(internship.start <= Date.now() && internship.end >= Date.now()) {
+		
+			$('#tracking-button').removeAttr('disabled');
+		} else {
+		
+			$('#tracking-button').attr('disabled', 'disabled');
+		}
 	}
 }
 
@@ -490,15 +499,15 @@ function init() {
 		refreshInternshipOverview();
 		refreshWeekOverview();
 		refreshDayOverview();
-	
+
 	// no internship available, show welcome modal
 	} else {
-	
+
 		$('#modal-welcome').modal({
 			backdrop: 'static',
 			keyboard: false
 		});
-		
+
 		// button handler for closing welcome and opening internship form
 		$('#welcome-button-close').on('click', function() {
 	
