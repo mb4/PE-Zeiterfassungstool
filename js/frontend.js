@@ -511,8 +511,8 @@ function init() {
 init();
 
 // add datepickers to internship form
-$('#form-internship-start').datepicker();
-$('#form-internship-end').datepicker();
+$('#form-internship-start').datepicker({weekStart:1});
+$('#form-internship-end').datepicker({weekStart:1});
 
 
 
@@ -577,8 +577,8 @@ $('#create-internship-button').on('click', function() {
 	
         //emtpy internship details
         $('#form-internship-name').val("");
-        $('#form-internship-start').val("");
-        $('#form-internship-end').val("");
+        $('#form-internship-start').val("").attr('data-date','');
+        $('#form-internship-end').val("").attr('data-date','');
         $('#form-internship-id').val("");
         
 	$('#form-internship-cancel').show();
