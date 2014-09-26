@@ -241,23 +241,25 @@ function createOrUpdateWorkingPeriod(f_start, f_end, f_internship_id, f_info, f_
  * @param {string} f_type
  */
 function createOrUpdateDay(f_internship_id, f_timestamp, f_type, f_info)
-{
-    f_info = f_info || "";
-    
+{    
     //get midnight timestamp for day
     f_timestamp = getMidnightTimestamp(f_timestamp);
+    
+    var data =     {
+        internship_id: f_internship_id, 
+        timestamp: f_timestamp, 
+        type: f_type,
+    };
+    
+    if (typeof(f_info) == "String") data.info = f_info;
     
     db.insertOrUpdate("day",
     {
         internship_id: f_internship_id, 
         timestamp: f_timestamp
     },
-    {
-        internship_id: f_internship_id, 
-        timestamp: f_timestamp, 
-        type: f_type,
-        info: f_info
-    });
+    data
+    );
     
     db.commit();
 }

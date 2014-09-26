@@ -127,9 +127,13 @@ function refreshInternshipOverview(f_internship_id) {
 		//TODO
 		
 		// fill statistics
-		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship) ) +' h' );
-		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship) ) +' h' );
-		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship) ) +' h' );
+                var internship = getInternships(window.internship)[0];
+                var today = new Date();
+                console.log(internship.start);
+                
+		$('#overview-internship-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
+		$('#overview-internship-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
+		$('#overview-internship-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(internship.unique_id, internship.start, today.getTime()) ) +' h' );
 	}
 }
 
