@@ -249,7 +249,7 @@ function addWorkingPeriodBlock(id, i, start, end) {
 
 	id = id || null;
 	i = i || $('#overview-day-periods tr').length;
-	start = start || getHumanReadableHours( window.overviewDay );
+	start = start || getHumanReadableHours( window.overviewDay + i*60*1000 );
 	end = end || getHumanReadableHours( window.overviewDay + 3600*1000 );
 	
 	// create a new entry
