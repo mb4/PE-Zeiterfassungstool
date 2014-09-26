@@ -445,8 +445,8 @@ function addDynblock(f_type, f_info, f_start, f_end)
             +'</div>\n'
     
     $("#dynblock-wrapper").prepend(dynblock);
-    $('#form-internship-dynblock-col1-'+id).datepicker();
-    if (f_type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
+    $('#form-internship-dynblock-col1-'+id).datepicker({weekStart:1});
+    if (f_type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker({weekStart:1});
     
     // eventhandler dynblock delete (deletes vacation period or holiday from internship form)
     $('#form-internship-dynblock-delete-'+id).on('click', function(e) {
@@ -750,7 +750,7 @@ $('.btn-add-dynblock').on('click', function(e) {
    /*$("#dynblock-wrapper").prepend(getDynblock(id, type));
    $('#form-internship-dynblock-col1-'+id).datepicker();
    if (type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
-   */
+   */ //TODO remove
 });
 
 
