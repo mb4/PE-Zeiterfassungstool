@@ -404,6 +404,12 @@ function refreshDayOverview(f_timestamp) {
 
 		//$('#overview-day-periods').append('<tr><td>No work tracked for this day. Yeah!</td></tr>');//TODO remove
 	}
+        
+        // fill statistics
+        $('#overview-day-stat-total').text( getHumanReadableHoursFromDecimal( getTotalWorkTime(window.internship, f_timestamp)) +' h' );
+        $('#overview-day-stat-worked').text( getHumanReadableHoursFromDecimal( getCompletedWorkTime(window.internship, f_timestamp) ) +' h' );
+        $('#overview-day-stat-due').text( getHumanReadableHoursFromDecimal( getDueWorkTime(window.internship, f_timestamp) ) +' h' );
+
 }
 
 /**
