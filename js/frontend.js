@@ -690,7 +690,7 @@ $('#form-internship-save').on('click', function() {
 			// save updated entry
 			if(i_id.length != 0) {
 
-				createOrUpdateInternship(i_name, startDate, endDate, 7.8, holidays, vacation_days, i_id);
+				createOrUpdateInternship(i_name, startDate, endDate, 7.7, holidays, vacation_days, i_id);
 				
 				// if the edited internship is currently displayed, update view
 				if(i_id == window.internship) {
@@ -702,7 +702,7 @@ $('#form-internship-save').on('click', function() {
 			// create new entry
 			} else {
 			
-				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.8, holidays, vacation_days);
+				var update_id = createOrUpdateInternship(i_name, startDate, endDate, 7.7, holidays, vacation_days);
 				
 				refreshInternshipOverview(update_id);
 				window.internship = update_id;
