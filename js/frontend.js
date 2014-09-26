@@ -73,7 +73,7 @@ function getHumanReadableHoursFromDecimal(f_decimal) {
 	
 	// if round error (60 minutes), adjust values
 	if(returnMinutes == 60) {
-		
+		// TODO problems with negative values?
 		returnHours++;
 		returnMinutes = 0;
 	}
@@ -343,10 +343,19 @@ function addWorkingPeriodBlock(id, i, start, end) {
  */
 function refreshDayOverview(f_timestamp) {
 
-	//TODO add button for creating new working periods
 	//TODO add day statistics
 
 	f_timestamp = getMidnightTimestamp( parseInt(f_timestamp) ) || window.overviewDay;
+	
+	currentInternship = getInternships(window.internship);
+	
+	// check if current day is outside internship range
+	if(currentInternship[0].end < f_timestamp) {
+		f_timestamp = currentInternship[0].end;
+	} else if(currentInternship[0].start > f_timestamp) {
+		f_timestamp = currentInternship[0].start;
+	}
+	
 	window.overviewDay = f_timestamp;
 
 	$('#overview-day-date').text( getHumanReadableDate(f_timestamp) );
