@@ -15,6 +15,7 @@
         <!-- Bootstrap / library CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/datepicker.css" rel="stylesheet">
+        <link href="css/introjs.min.css" rel="stylesheet">
 
         <!-- webfonts -->
         <link href="http://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300,100" rel="stylesheet">
@@ -171,7 +172,7 @@
                 </div>
                 <div class="col-xs-12 col-md-6">
                 	<div class="row">
-		                <div class="col-xs-6 col-md-6">
+		                <div class="col-xs-6 col-md-6" id="overview-day">
 		                	<h2>Day overview <small id="overview-day-date">&mdash;</small></h2>
 		                	
 		                	<div class="row overview-day-wrapper">
@@ -201,7 +202,7 @@
 		                </div>
                             
 		                <div class="col-xs-6 col-md-6">
-			                <div class="well">
+			                <div class="well" id="overview-internship">
 	
 								<h3><span id="overview-internship-name">Internship</span> <button class="btn btn-xs btn-default" id="change-internship-button">switch</button></h3>
 								
@@ -322,6 +323,7 @@
 				<p>All time tracked is directly recorded for an internship or project.<br>To start, please create an internship first.</p>
 		      </div>
 		      <div class="modal-footer">
+		      	<button type="button" class="btn btn-default" id="welcome-button-tour">Take the tour</button>
 		        <button type="button" class="btn btn-primary" id="welcome-button-close">Create new internship</button>
 		      </div>
 		    </div>
@@ -380,6 +382,7 @@
         <script src="js/bootstrap-datepicker.js"></script>
         <script src="js/localstoragedb.min.js"></script>
         <script src="js/jquery.runner-min.js"></script>
+        <script src="js/intro.min.js"></script>
         <script src="js/md5.js"></script>
         <!-- Custom JS logic -->
         <script src="js/backend.js"></script>

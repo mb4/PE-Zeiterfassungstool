@@ -98,6 +98,78 @@ function getTimestampFromHours(f_timestamp, f_hours) {
 }
 
 
+/**
+ * Starts the tour to explain the UI
+ */
+function startTour() {
+
+	var intro = introJs();
+	intro.setOptions({
+		showStepNumbers: false,
+		steps: [
+			{
+				intro: 'Hey! This tour will help you to understand how you can use this tool for time tracking.'
+			},
+			{
+				intro: 'This tool is designed to track the time you spend in your internships. This way you know how much time you really worked.<br><br>Of course you can also use this tool to track time for other projects.',
+			},
+			{
+				element: '#overview-internship',
+				intro: 'Before starting, you have to create an internship. Internships have a defined time range. You can only track time in that period.',
+				position: 'left'
+			},
+			{
+				element: '#edit-internship-button',
+				intro: 'You can change name and time range of your internships. Here you can also add holidays and vacation days which are not calculated as working days.',
+				position: 'left'
+			},
+			{
+				element: '#tracking-button',
+				intro: 'Tracking time is easy. Start tracking when you begin working, and stop it on breaks and when finishing work.',
+				position: 'left'
+			},
+			{
+				element: '#overview-internship-name',
+				intro: 'The time you track will be added to the internship you currently display here. You can switch between internships to track different projects.',
+				position: 'left'
+			},
+			{
+				element: '#overview-day',
+				intro: 'You can see all time tracked for a day on the daily overview.',
+				position: 'left'
+			},
+			{
+				element: '#overview-day-button-addperiod',
+				intro: 'It is possible to manually add new working periods to a day, and edit the periods you have.',
+				position: 'left'
+			},
+			{
+				element: '#overview-week',
+				intro: 'Here you can see an overview over each week in your internship time range. Switch between weeks using the arrow buttons.',
+				position: 'right'
+			},
+			{
+				element: 'select.overview-week-3',
+				intro: 'Quickly change the type of a day between working day, weekend, holiday and vacation.',
+				position: 'right'
+			},
+			{
+				intro: 'That\'s it! Add a new internship and start tracking!',
+			},
+		]
+	});
+	
+	intro.oncomplete(function() {
+		init();
+	});
+	
+	intro.onexit(function() {
+		init();
+	});
+
+	intro.start();
+}
+
 
 
 
@@ -877,4 +949,12 @@ $('#overview-day-info-save').on('click', function() {
 	$('#overview-day-info').attr('disabled','disabled');
 	$('#overview-day-info-edit').show();
 	$('#overview-day-info-save').hide();
+});
+
+
+// start intro tour button
+$('#welcome-button-tour').on('click', function() {
+
+	$('#modal-welcome').modal('hide');
+	startTour();
 });
