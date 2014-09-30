@@ -221,7 +221,8 @@ function refreshInternshipOverview(f_internship_id) {
  */
 function refreshWeekOverview(f_timestamp) {
 
-	f_timestamp = getWeekTimestamp( parseInt(f_timestamp) ) || window.overviewWeek;
+	f_timestamp = f_timestamp || window.overviewWeek;
+	f_timestamp = getWeekTimestamp(f_timestamp);
 	window.overviewWeek = f_timestamp;
 
 	// refresh displayed week time range
@@ -327,7 +328,6 @@ function addWorkingPeriodBlock(id, i, start, end) {
 	// create a new entry
 	if(id == null) {
 		id = createOrUpdateWorkingPeriod( getTimestampFromHours(window.overviewDay, start), getTimestampFromHours(window.overviewDay, end), window.internship);
-		console.log(id);
 	}
 
 	$('#overview-day-periods').append(
@@ -924,8 +924,6 @@ $('#overview-week-button-next').on('click', function(e) {
 $('#overview-day-button-addperiod').on('click', function() {
 
 	var uid = addWorkingPeriodBlock();
-	
-	console.log(uid);
 	
 	$('#overview-day-edit-'+uid).click();
 });

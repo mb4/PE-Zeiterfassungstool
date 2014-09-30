@@ -25,7 +25,7 @@ window.trackingStart = 0; // timestamp saved at start of current tracking
 /////////////////////////////////////////////
 
 // initialise DB. If the database doesn't exist, it is created
-var db = new localStorageDB('timetracktool', localStorage);
+var db = new localStorageDB('timetracktool', window.localStorage);
 
 // check if the database was just created. Then create all tables
 if( db.isNew() ) {
@@ -182,16 +182,18 @@ function getMidnightTimestamp(f_timestamp) {
  */
 function getWeekTimestamp(f_timestamp) {
     
-    var date = new Date(f_timestamp);
-    var dayOfWeek = date.getDay();
+    var wdate = new Date( getMidnightTimestamp(f_timestamp) );
+    var dayOfWeek = wdate.getDay();
     
     if(dayOfWeek == 0) dayOfWeek = 7;
     
     // calculate monday (sunday = 0, monday = 1, ...)
     if(dayOfWeek != 1)
-    	date.setDate( date.getDate() - (dayOfWeek-1) );
+    	wdate.setDate( wdate.getDate() - (dayOfWeek-1) );
+    	
+    var retval = wdate.getTime();
     
-    return getMidnightTimestamp( date.getTime() );
+    return wdate.getTime();
 }
 
 	
@@ -448,8 +450,3 @@ function getInternships(f_internship_id)
 {
     return typeof(f_internship_id) == "string" ? db.query("internship", {unique_id:f_internship_id}) : db.query("internship");
 }
-
-//ToDO: remove
-//createOrUpdateDay(333, 2411568691988, "Holiday");
-//createOrUpdateInternship("test", 1411549941668, 1412759541668, 2443, [1411768800000,1411682400005], convertPeriodToDayList(1411549941668, 1412759541668), 222);
-//console.log(getFreeDaysAndPeriods(222));
