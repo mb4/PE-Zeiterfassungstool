@@ -1,4 +1,18 @@
-<!DOCTYPE html>
+<?php
+
+$to = 'receiver@example.com, receiver2@example.com';
+
+$subject = 'TimeTrackTool - der einfache Weg, deine Arbeitszeit zu erfassen';
+
+$headers = "From: sender@example.com\r\n";
+$headers .= "Reply-To: sender@example.com\r\n";
+//$headers .= "CC: copy@example.com\r\n";
+//$headers .= "BCC: blindcopy@example.com\r\n";
+$headers .= "MIME-Version: 1.0\r\n";
+$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+
+$message = '<!DOCTYPE html>
 <html>
 <head>
 <title>TimeTrackTool - der einfache Weg, deine Arbeitszeit zu erfassen</title>
@@ -126,13 +140,13 @@
 <body>
 
 <div class="ttt-wrapper">
-	<div class="ttt-preheader"><a href="http://mb4.github.io/PE-Zeiterfassungstool/mail/ttt_mail.html">Hier klicken fÃ¼r eine Online-Ansicht</a>, falls diese Mail nicht korrekt angezeigt wird.</div>
+	<div class="ttt-preheader"><a href="http://mb4.github.io/PE-Zeiterfassungstool/mail/ttt_mail.html">Hier klicken für eine Online-Ansicht</a>, falls diese Mail nicht korrekt angezeigt wird.</div>
     <a href="http://mb4.github.io/PE-Zeiterfassungstool"><img class="ttt-logo" src="http://mb4.github.io/PE-Zeiterfassungstool/mail/ttt_logo_full_bright.png" width="302" height="45">
     <img class="ttt-screen" src="http://mb4.github.io/PE-Zeiterfassungstool/mail/ttt_screen.jpg"></a>
 
     <h1>
         Wissen, wie viel du gearbeitet hast.
-        <span>Mit <strong>TimeTrackTool</strong> wird die Erfassung deiner Arbeitszeit so einfach wie nie zuvor &ndash; angepasst an deine BedÃ¼rfnisse als dualer Student.</span>
+        <span>Mit <strong>TimeTrackTool</strong> wird die Erfassung deiner Arbeitszeit so einfach wie nie zuvor &ndash; angepasst an deine Bedürfnisse als dualer Student.</span>
     </h1>
     
     
@@ -142,22 +156,23 @@
         <p>Erfasse deine Arbeitszeit genau dort, wo du sie einsetzt &ndash; ob PE oder Kundenprojekt.</p>
     </div><div class="ttt-third">
         <img src="http://mb4.github.io/PE-Zeiterfassungstool/mail/ttt_week.png" width="60" height="60">
-        <h3>Automatisch erstellte WochenÃ¼bersichten.</h3>
-        <p>Behalte mit der Wochenansicht den Ãœberblick Ã¼ber deine zu leistende Arbeitszeit.</p>
+        <h3>Automatisch erstellte Wochenübersichten.</h3>
+        <p>Behalte mit der Wochenansicht den Überblick über deine zu leistende Arbeitszeit.</p>
     </div><div class="ttt-third">
         <img src="http://mb4.github.io/PE-Zeiterfassungstool/mail/ttt_day.png" width="60" height="60">
-        <h3>Volle Kontrolle Ã¼ber deinen Arbeitstag.</h3>
-        <p>Betrachte die erfassten Zeiten fÃ¼r jeden Tag. Bearbeite bestehende EintrÃ¤ge, oder fÃ¼ge manuell neue hinzu.</p>
+        <h3>Volle Kontrolle über deinen Arbeitstag.</h3>
+        <p>Betrachte die erfassten Zeiten für jeden Tag. Bearbeite bestehende Einträge, oder füge manuell neue hinzu.</p>
     </div>
     
     <h2>Probiere es gleich aus und speichere es dir als Lesezeichen.
-    <a href="http://mb4.github.io/PE-Zeiterfassungstool" class="ttt-button">TimeTrackTool Ã¶ffnen</a>
+    <a href="http://mb4.github.io/PE-Zeiterfassungstool" class="ttt-button">TimeTrackTool öffnen</a>
     </h2>
     
-    <p class="ttt-footer">Projekt Ã¶ffentlich verfÃ¼gbar auf <a href="http://github.com/mb4/PE-Zeiterfassungstool">Github</a> </p>
+    <p class="ttt-footer">Projekt öffentlich verfügbar auf <a href="http://github.com/mb4/PE-Zeiterfassungstool">Github</a> </p>
 </div>
-
-
-
 </body>
-</html>
+</html>';
+
+mail($to, $subject, $message, $headers);
+
+?>
