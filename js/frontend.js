@@ -839,7 +839,7 @@ $('#form-internship-delete').on('click', function() {
 // btn-add-dynblock handler (adds vacation period or holiday to internship form)
 $('.btn-add-dynblock').on('click', function(e) {
    
-	e.preventdefault();
+	e.preventDefault();
 	
    var type = $(this).attr("data-type");
    //var id = $("#dynblock-wrapper > div").length; //ToDo: remove
