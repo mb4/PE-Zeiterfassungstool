@@ -839,15 +839,17 @@ $('#form-internship-delete').on('click', function() {
 // btn-add-dynblock handler (adds vacation period or holiday to internship form)
 $('.btn-add-dynblock').on('click', function(e) {
    
-   var type = $(this).attr("data-type");
-   //var id = $("#dynblock-wrapper > div").length; //ToDo: remove
+	e.preventDefault();
+	
+	var type = $(this).attr("data-type");
+   	//var id = $("#dynblock-wrapper > div").length; //TODO: remove
    
-   addDynblock(type);
+	addDynblock(type);
    
-   /*$("#dynblock-wrapper").prepend(getDynblock(id, type));
-   $('#form-internship-dynblock-col1-'+id).datepicker();
-   if (type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
-   */ //TODO remove
+	/*$("#dynblock-wrapper").prepend(getDynblock(id, type));
+	$('#form-internship-dynblock-col1-'+id).datepicker();
+	if (type == "Vacation") $('#form-internship-dynblock-col2-'+id).datepicker();
+	*/ //TODO remove
 });
 
 
