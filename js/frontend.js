@@ -607,6 +607,18 @@ function init() {
 
 init();
 
+
+// TODO remove: quickfix to update current internships to have 7.6 hours only
+updateInterns = db.query("internship", {daily_hours: 7.7});
+for(i = 0; i < updateInterns.length; i++) {
+	db.update("internship", {unique_id: updateInterns[i].unique_id},
+	function(row) {
+		row.daily_hours = 7.6;
+		return row;
+	});
+}
+
+
 // add datepickers to internship form
 $('#form-internship-start').datepicker({weekStart:1});
 $('#form-internship-end').datepicker({weekStart:1});
@@ -785,7 +797,7 @@ $('#form-internship-save').on('click', function() {
 			// save updated entry
 			if(i_id.length != 0) {
 
-				createOrUpdateInternship(i_name, startDate, endDate, 7.7, holidays, vacation_days, i_id);
+				createOrUpdateInternship(i_name, startDate, endDate, 7.6, holidays, vacation_days, i_id);
 				
 				// if the edited internship is currently displayed, update view
 				if(i_id == window.internship) {
